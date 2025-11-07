@@ -1,0 +1,10 @@
+# Fleet bundle configuration
+defaultNamespace: fleet-test
+
+# Target clusters with matching labels
+targetCustomizations:
+- name: vagrant-development
+  clusterSelector:
+    matchLabels:
+      environment: development
+      provider: vagrant
