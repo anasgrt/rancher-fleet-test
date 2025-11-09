@@ -1,0 +1,42 @@
+controller:
+  # Number of replicas
+  replicaCount: 2
+  
+  # Resource limits
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # Service configuration
+  service:
+    type: LoadBalancer
+    # For bare metal/Vagrant, use NodePort instead
+    # type: NodePort
+    # nodePorts:
+    #   http: 30080
+    #   https: 30443
+  
+  # Enable metrics
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false  # Set true if you have Prometheus Operator
+  
+  # Admission webhooks
+  admissionWebhooks:
+    enabled: true
+    
+  # Security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    fsGroup: 101
+
+# Optional: Default backend
+defaultBackend:
+  enabled: true
+  replicaCount: 1
