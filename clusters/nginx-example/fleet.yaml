@@ -6,5 +6,5 @@ targetCustomizations:
 - name: vagrant-development
   clusterSelector:
     matchLabels:
-      environment: development
-      provider: vagrant
+      env: dev
+     
