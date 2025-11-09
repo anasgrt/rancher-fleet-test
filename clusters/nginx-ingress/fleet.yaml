@@ -1,24 +1,24 @@
 defaultNamespace: ingress-nginx
 
-# Target clusters with env=dev label
+helm:
+  # External Helm chart reference
+  chart: ingress-nginx
+  repo: https://kubernetes.github.io/ingress-nginx
+  version: 4.11.3
+  releaseName: nginx-ingress
+  
+  # Helm release behavior
+  atomic: true              # Rollback on failure
+  timeoutSeconds: 300       # Wait up to 5 minutes
+  
+  
+  # Helm values override (optional)
+  valuesFiles:
+  - values.yaml
+
+# Target clusters
 targetCustomizations:
 - name: dev-clusters
   clusterSelector:
     matchLabels:
       env: dev
-
-helm:
-  # Reference to Helm chart repository
-  chart: ingress-nginx
-  repo: https://kubernetes.github.io/ingress-nginx
-  version: 4.11.3  # Specify version or use "latest"
-  
-  # Helm release name
-  releaseName: nginx-ingress
-  
-  # Wait for resources to be ready
-  timeoutSeconds: 300
-  
-  # Additional Helm flags
-  atomic: true
-  disablePreProcess: false
