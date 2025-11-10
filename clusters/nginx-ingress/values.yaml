@@ -36,7 +36,3 @@ controller:
     runAsUser: 101
     fsGroup: 101
 
-# Optional: Default backend
-#defaultBackend:
-  #enabled: true
-  #replicaCount: 1
