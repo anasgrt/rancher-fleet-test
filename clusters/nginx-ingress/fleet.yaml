@@ -8,7 +8,7 @@ helm:
   releaseName: nginx-ingress
   
   # Helm release behavior
-  atomic: true              # Rollback on failure
+  #atomic: true              # Rollback on failure
   timeoutSeconds: 600       # Wait up to 5 minutes
   
   
