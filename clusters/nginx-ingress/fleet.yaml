@@ -9,7 +9,7 @@ helm:
   
   # Helm release behavior
   atomic: true              # Rollback on failure
-  timeoutSeconds: 300       # Wait up to 5 minutes
+  timeoutSeconds: 600       # Wait up to 5 minutes
   
   
   # Helm values override (optional)
