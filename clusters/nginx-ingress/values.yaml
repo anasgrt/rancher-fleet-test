@@ -37,6 +37,6 @@ controller:
     fsGroup: 101
 
 # Optional: Default backend
-defaultBackend:
-  enabled: true
-  replicaCount: 1
+#defaultBackend:
+  #enabled: true
+  #replicaCount: 1
