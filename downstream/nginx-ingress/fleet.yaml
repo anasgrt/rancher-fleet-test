@@ -1,6 +1,9 @@
 # Fleet Configuration for nginx-ingress Controller
 # Targets: Downstream clusters using env labels (dev, prd)
 
+# Target namespace for deployment
+namespace: ingress-nginx
+
 helm:
   # External Helm chart reference
   chart: ingress-nginx

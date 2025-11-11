@@ -1,6 +1,9 @@
 # Fleet Configuration for Monitoring Stack
 # Targets: Management cluster only (env=management)
 
+# Target namespace for deployment
+namespace: cattle-monitoring-system
+
 targetCustomizations:
 - name: management-cluster
   clusterSelector:

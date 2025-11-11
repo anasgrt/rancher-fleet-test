@@ -1,6 +1,9 @@
 # Fleet Configuration for nginx-example
 # Simple test application for downstream clusters
 
+# Target namespace for deployment
+namespace: fleet-test
+
 targetCustomizations:
 - name: all-downstream
   clusterSelector:

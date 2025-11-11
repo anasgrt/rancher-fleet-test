@@ -1,6 +1,9 @@
 # Fleet Configuration for Cluster Services
 # Targets: Management cluster only (env=management)
 
+# Target namespace for deployment
+namespace: kube-system
+
 targetCustomizations:
 - name: management-cluster
   clusterSelector:
