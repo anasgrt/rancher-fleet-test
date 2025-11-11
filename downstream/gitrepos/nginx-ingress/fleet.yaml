@@ -1,27 +1,18 @@
-# Fleet Configuration for nginx-ingress Controller
-# Targets: Downstream clusters using env labels (dev, prd)
-
-# Target namespace for deployment
 defaultNamespace: ingress-nginx
 
 helm:
-  # External Helm chart reference
   chart: ingress-nginx
   repo: https://kubernetes.github.io/ingress-nginx
   version: 4.11.3
   releaseName: nginx-ingress
-  
-  # Helm release behavior - OPTIMIZED FOR VAGRANT/BARE-METAL
-  wait: false               # Don't wait for LoadBalancer (speeds up deployment)
-  timeoutSeconds: 600       # Extended timeout for initial deployment
-  
-  # Values override file
+  wait: false
+  timeoutSeconds: 600
   valuesFiles:
   - values.yaml
 
-# Target all downstream clusters (env: dev OR prd)
+# Target ALL downstream clusters (both dev and prd)
 targetCustomizations:
-- name: all-downstream
+- name: downstream-clusters
   clusterSelector:
     matchExpressions:
     - key: env
