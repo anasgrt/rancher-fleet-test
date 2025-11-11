@@ -1,5 +1,5 @@
 # Fleet Configuration for nginx-example
-# Simple test application
+# Simple test application for downstream clusters
 
 targetCustomizations:
 - name: all-downstream

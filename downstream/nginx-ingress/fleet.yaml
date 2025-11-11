@@ -1,5 +1,5 @@
 # Fleet Configuration for nginx-ingress Controller
-# Targets: Downstream clusters based on environment labels
+# Targets: Downstream clusters using env labels (dev, prd)
 
 helm:
   # External Helm chart reference
@@ -16,8 +16,7 @@ helm:
   valuesFiles:
   - values.yaml
 
-# Target clusters with env label (dev or prd)
-# This deploys to downstream1 (env:dev) and downstream2 (env:prd)
+# Target all downstream clusters (env: dev OR prd)
 targetCustomizations:
 - name: all-downstream
   clusterSelector:
