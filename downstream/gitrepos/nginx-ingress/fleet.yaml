@@ -2,7 +2,7 @@
 # Targets: Downstream clusters using env labels (dev, prd)
 
 # Target namespace for deployment
-namespace: ingress-nginx
+defaultNamespace: ingress-nginx
 
 helm:
   # External Helm chart reference
