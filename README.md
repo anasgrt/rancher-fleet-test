@@ -59,11 +59,22 @@ fleet:
 #### nginx-ingress
 - **Type**: Helm chart
 - **Version**: 4.11.3
-- **Service Type**: NodePort (30080/30443) - Optimized for Vagrant
+- **Target**: **DOWNSTREAM CLUSTERS ONLY** (cluster-type=downstream)
+- **Service Type**: NodePort (30080/30443) - Optimized for Vagrant/bare-metal
 - **Features**: 
-  - No LoadBalancer wait (faster deployment)
-  - DefaultBackend disabled
-  - 2 replicas for HA
+  - No LoadBalancer wait (faster deployment in Vagrant)
+  - DefaultBackend disabled (reduced resource usage)
+  - 2 replicas for high availability
+  - Does NOT deploy to management cluster (prevents conflicts with Rancher's ingress)
+- **Access**: `http://<downstream-node-ip>:30080` or `https://<downstream-node-ip>:30443`
+
+**Why downstream only?**
+The management cluster runs Rancher's built-in ingress controller. Deploying nginx-ingress there would:
+- Create port conflicts (80/443 already in use)
+- Waste resources (duplicate ingress controllers)
+- Complicate troubleshooting (which ingress is handling requests?)
+
+The `cluster-type: downstream` label in `fleet.yaml` ensures this ingress controller is deployed **only to workload clusters**.
 
 #### nginx-example
 - **Type**: Kubernetes manifests

@@ -1,3 +1,7 @@
+# Fleet Configuration for nginx-ingress Controller
+# Targets: DOWNSTREAM CLUSTERS ONLY
+# Purpose: Provides ingress capability for workload clusters
+
 defaultNamespace: ingress-nginx
 
 helm:
@@ -7,15 +11,17 @@ helm:
   version: 4.11.3
   releaseName: nginx-ingress
   
-  # Helm release behavior - OPTIMIZED FOR VAGRANT
+  # Helm release behavior - OPTIMIZED FOR VAGRANT/BARE-METAL
   wait: false               # Don't wait for LoadBalancer (speeds up deployment)
-  timeoutSeconds: 600       # Extended timeout
+  timeoutSeconds: 600       # Extended timeout for initial deployment
   
-  # Helm values override
+  # Values override file
   valuesFiles:
   - values.yaml
 
-# Target DOWNSTREAM clusters only
+# CRITICAL: Target DOWNSTREAM clusters ONLY
+# The management cluster (local) should NOT run this ingress controller
+# as it may conflict with Rancher's built-in ingress
 targetCustomizations:
 - name: downstream-clusters
   clusterSelector:
