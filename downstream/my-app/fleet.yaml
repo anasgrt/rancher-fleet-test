@@ -1,0 +1,24 @@
+# Fleet bundle configuration
+defaultNamespace: my-app
+
+# Target specific environment in downstream clusters
+targetCustomizations:
+- name: dev-clusters
+  clusterSelector:
+    matchLabels:
+      cluster-type: downstream
+      env: dev
+  # Dev-specific overrides
+  helm:
+    values:
+      replicaCount: 1
+      
+- name: prod-clusters
+  clusterSelector:
+    matchLabels:
+      cluster-type: downstream
+      env: production
+  # Production-specific overrides
+  helm:
+    values:
+      replicaCount: 3

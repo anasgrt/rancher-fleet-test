@@ -1,0 +1,23 @@
+defaultNamespace: ingress-nginx
+
+helm:
+  # External Helm chart reference
+  chart: ingress-nginx
+  repo: https://kubernetes.github.io/ingress-nginx
+  version: 4.11.3
+  releaseName: nginx-ingress
+  
+  # Helm release behavior - OPTIMIZED FOR VAGRANT
+  wait: false               # Don't wait for LoadBalancer (speeds up deployment)
+  timeoutSeconds: 600       # Extended timeout
+  
+  # Helm values override
+  valuesFiles:
+  - values.yaml
+
+# Target DOWNSTREAM clusters only
+targetCustomizations:
+- name: downstream-clusters
+  clusterSelector:
+    matchLabels:
+      cluster-type: downstream

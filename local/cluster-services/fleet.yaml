@@ -1,0 +1,9 @@
+# Fleet bundle configuration for cluster-wide services
+defaultNamespace: kube-system
+
+# Target LOCAL cluster only
+targetCustomizations:
+- name: local-cluster
+  clusterSelector:
+    matchLabels:
+      cluster-type: local

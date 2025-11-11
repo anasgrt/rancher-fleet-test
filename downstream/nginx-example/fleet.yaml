@@ -1,10 +1,9 @@
 # Fleet bundle configuration
 defaultNamespace: fleet-test
 
-# Target clusters with matching labels
+# Target DOWNSTREAM clusters only
 targetCustomizations:
-- name: vagrant-development
+- name: downstream-clusters
   clusterSelector:
     matchLabels:
-      env: dev
-     
+      cluster-type: downstream
