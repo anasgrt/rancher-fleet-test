@@ -1,9 +1,12 @@
-# Fleet bundle configuration
-defaultNamespace: fleet-test
+# Fleet Configuration for nginx-example
+# Simple test application
 
-# Target DOWNSTREAM clusters only
 targetCustomizations:
-- name: downstream-clusters
+- name: all-downstream
   clusterSelector:
-    matchLabels:
-      cluster-type: downstream
+    matchExpressions:
+    - key: env
+      operator: In
+      values:
+      - dev
+      - prd

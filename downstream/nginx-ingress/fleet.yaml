@@ -1,8 +1,5 @@
 # Fleet Configuration for nginx-ingress Controller
-# Targets: DOWNSTREAM CLUSTERS ONLY
-# Purpose: Provides ingress capability for workload clusters
-
-defaultNamespace: ingress-nginx
+# Targets: Downstream clusters based on environment labels
 
 helm:
   # External Helm chart reference
@@ -19,11 +16,14 @@ helm:
   valuesFiles:
   - values.yaml
 
-# CRITICAL: Target DOWNSTREAM clusters ONLY
-# The management cluster (local) should NOT run this ingress controller
-# as it may conflict with Rancher's built-in ingress
+# Target clusters with env label (dev or prd)
+# This deploys to downstream1 (env:dev) and downstream2 (env:prd)
 targetCustomizations:
-- name: downstream-clusters
+- name: all-downstream
   clusterSelector:
-    matchLabels:
-      cluster-type: downstream
+    matchExpressions:
+    - key: env
+      operator: In
+      values:
+      - dev
+      - prd

@@ -1,24 +1,27 @@
-# Fleet bundle configuration
-defaultNamespace: my-app
+# Fleet Configuration for my-app
+# Environment-specific deployments
 
-# Target specific environment in downstream clusters
 targetCustomizations:
-- name: dev-clusters
+- name: dev-environment
   clusterSelector:
     matchLabels:
-      cluster-type: downstream
       env: dev
-  # Dev-specific overrides
   helm:
     values:
       replicaCount: 1
-      
-- name: prod-clusters
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+
+- name: prd-environment
   clusterSelector:
     matchLabels:
-      cluster-type: downstream
-      env: production
-  # Production-specific overrides
+      env: prd
   helm:
     values:
       replicaCount: 3
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "200m"
