@@ -11,7 +11,7 @@ rancher-fleet-test/
 ├── README.md                          # This file
 │
 ├── downstream/                        # Applications for downstream clusters
-│   ├── dev-only/                      # Apps ONLY for dev clusters
+│   ├── dev/                      # Apps ONLY for dev clusters
 │   │   ├── nginx-ingress/             # Ingress controller (NodePort)
 │   │   │   ├── fleet.yaml
 │   │   │   └── values.yaml
@@ -19,7 +19,7 @@ rancher-fleet-test/
 │   │   └── debug-tools/               # Debug utilities
 │   │       └── fleet.yaml
 │   │
-│   └── prd-only/                      # Apps ONLY for prd clusters
+│   └── prd/                      # Apps ONLY for prd clusters
 │       └── production-app/            # Production-specific app
 │           └── fleet.yaml
 │
@@ -48,8 +48,8 @@ Fleet v0.13.4 does NOT support per-application environment targeting within a si
 **Current Behavior:**
 ```
 downstream/common/nginx-ingress/    → ClusterGroup 'default' (env=dev) ✅
-downstream/dev-only/debug-tools/    → ClusterGroup 'default' (env=dev) ✅  
-downstream/prd-only/production-app/ → ClusterGroup 'default' (env=dev) ❌ Wrong!
+downstream/dev/debug-tools/    → ClusterGroup 'default' (env=dev) ✅  
+downstream/prd/production-app/ → ClusterGroup 'default' (env=dev) ❌ Wrong!
 ```
 
 Everything deploys to `default` ClusterGroup because it's alphabetically first.
@@ -125,9 +125,9 @@ targetCustomizations:
 
 | Directory | Target ClusterGroup | Clusters Receiving Deployment |
 |-----------|---------------------|-------------------------------|
-| `downstream/dev-only/nginx-ingress/` | `default` (env=dev) | Dev clusters only |
-| `downstream/dev-only/debug-tools/` | `default` (env=dev) | Dev clusters only |
-| `downstream/prd-only/production-app/` | `default` (env=dev) | Dev clusters only ⚠️ |
+| `downstream/dev/nginx-ingress/` | `default` (env=dev) | Dev clusters only |
+| `downstream/dev/debug-tools/` | `default` (env=dev) | Dev clusters only |
+| `downstream/prd/production-app/` | `default` (env=dev) | Dev clusters only ⚠️ |
 | `local/gitrepos/` | `local` (env=management) | Management cluster only |
 
 **To properly deploy to prd clusters:**
@@ -137,8 +137,8 @@ targetCustomizations:
 
 |-----------|---------------------|-------------------------------|
 | `downstream/common/` | `default` (env=dev) | Dev clusters only |
-| `downstream/dev-only/` | `default` (env=dev) | Dev clusters only |
-| `downstream/prd-only/` | `default` (env=dev) | Dev clusters only ⚠️ |
+| `downstream/dev/` | `default` (env=dev) | Dev clusters only |
+| `downstream/prd/` | `default` (env=dev) | Dev clusters only ⚠️ |
 | `local/gitrepos/` | `local` (env=management) | Management cluster only |
 
 **To properly deploy to prd clusters:**
@@ -288,7 +288,7 @@ kubectl get bundles -n fleet-default
 
 ### App Deployed to Wrong Clusters
 
-**Symptom:** App appears on dev clusters when it should be prd-only (or vice versa)
+**Symptom:** App appears on dev clusters when it should be prd (or vice versa)
 
 **Root Cause:** Fleet v0.13.4 limitation - all apps in same GitRepo deploy to first ClusterGroup alphabetically
 

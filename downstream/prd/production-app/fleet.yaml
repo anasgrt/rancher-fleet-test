@@ -1,0 +1,17 @@
+# Fleet v0.13.4 Configuration for production-app
+#
+# IMPORTANT: Fleet v0.13.4 Limitation
+# This app is in 'prd' but Fleet v0.13.4 deploys ALL paths from the
+# same GitRepo to the FIRST alphabetical ClusterGroup ('default' = env:dev).
+#
+# WORKAROUND OPTIONS:
+# 1. Use separate Git repositories for dev and prd
+# 2. Accept that this deploys to dev until Fleet v0.14+ upgrade
+# 3. Manually manage prd deployments outside of Fleet
+#
+# For now, this will deploy to 'default' ClusterGroup (env=dev) clusters.
+#
+# See: README.md for complete Fleet v0.13.4 documentation and migration notes
+
+defaultNamespace: production-app
+keepResources: false

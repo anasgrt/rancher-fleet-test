@@ -1,0 +1,12 @@
+# Fleet v0.13.4 Configuration for debug-tools
+#
+# IMPORTANT: Fleet v0.13.4 Limitation
+# This directory is in 'dev' but Fleet v0.13.4 deploys ALL paths from the
+# same GitRepo to the FIRST alphabetical ClusterGroup ('default' = env:dev).
+#
+# This means debug-tools will deploy to dev clusters as intended.
+#
+# See: README.md for complete Fleet v0.13.4 documentation
+
+defaultNamespace: debug-tools
+keepResources: false
