@@ -10,8 +10,8 @@ helm:
   valuesFiles:
   - values.yaml
 
-# Target ALL downstream clusters (both dev and prd)
-targetCustomizations:
+# Target downstream clusters (both dev and prd)
+targets:
 - name: downstream-clusters
   clusterSelector:
     matchExpressions:
