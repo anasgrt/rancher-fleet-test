@@ -1,0 +1,56 @@
+# Fleet v0.13.4 Configuration for production-app
+#
+# IMPORTANT: This app should be deployed ONLY to prd clusters
+# 
+# Fleet v0.13.4 Limitation:
+# - Multiple ClusterGroups exist (default=env:dev, production=env:prd)
+# - Fleet automatically applies FIRST ClusterGroup alphabetically ('default')
+# - NO way to override this in fleet.yaml (targetCustomizations requires Fleet v0.14+)
+#
+# WORKAROUND OPTIONS:
+# 1. Use separate Git repositories for dev and prd
+# 2. Rename ClusterGroup to ensure correct alphabetical order
+# 3. Wait for Fleet v0.14+ upgrade for targetCustomizations support
+#
+# For now, this will deploy to 'default' ClusterGroup (env=dev) clusters.
+# Move this to a separate prd-only Git repository for proper isolation.
+#
+# See: README.md for complete Fleet v0.13.4 documentation and migration notes
+
+defaultNamespace: production-app
+keepResources: false
+
+# Production application placeholder
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-app
+  namespace: production-app
+spec:
+  replicas: 3  # Higher replica count for production
+  selector:
+    matchLabels:
+      app: prod-app
+  template:
+    metadata:
+      labels:
+        app: prod-app
+    spec:
+      containers:
+      - name: app
+        image: nginx:stable-alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
