@@ -1,5 +1,8 @@
 defaultNamespace: ingress-nginx
 
+# Clean up resources when bundle removed
+keepResources: false
+
 helm:
   chart: ingress-nginx
   repo: https://kubernetes.github.io/ingress-nginx
@@ -10,17 +13,7 @@ helm:
   valuesFiles:
   - values.yaml
 
-# Target downstream clusters (both dev and prd)
-# targets:
-# - name: downstream-clusters
-#   clusterSelector:
-#     matchExpressions:
-#     - key: env
-#       operator: In
-#       values:
-#       - dev
-#       - prd
-
+# Target only dev cluster
 targetCustomizations:
 - name: dev-only
   clusterSelector:
