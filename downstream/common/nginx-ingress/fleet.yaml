@@ -1,14 +1,13 @@
-# Fleet v0.13.4 Configuration for nginx-ingress
+# Fleet Configuration for nginx-ingress
 #
 # IMPORTANT RULES:
 # 1. DO NOT add namespace.yaml or any other raw manifests to this directory
-#    (Helm charts cannot be mixed with raw manifests in Fleet v0.13.4)
-# 2. DO NOT add 'targets' or 'targetCustomizations' fields
-#    (Targeting is controlled by ClusterGroup resources)
-# 3. Use 'defaultNamespace' instead of creating namespace.yaml
+#    (Helm charts cannot be mixed with raw manifests in Fleet)
+# 2. Use 'defaultNamespace' instead of creating namespace.yaml
 #
-# Targeting: Deployed to ALL downstream clusters via ClusterGroup 'default'
-# Note: In Fleet v0.13.4, all apps deploy to first alphabetical ClusterGroup
+# Targeting: Deploys to ALL downstream clusters (no targetCustomizations)
+# If you want to limit to specific clusters, add targetCustomizations section
+#
 # See: README.md for complete documentation
 
 defaultNamespace: ingress-nginx
