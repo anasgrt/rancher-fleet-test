@@ -1,204 +1,336 @@
-# Rancher Fleet Test Repository
+# Fleet v0.13.4 GitOps Repository
 
-Multi-cluster GitOps repository for Rancher Fleet using **environment-based labeling** (dev, prd, management).
+## Important: Fleet v0.13.4 Targeting Rules
 
-## Repository Structure
+This repository is designed for **Fleet v0.13.4** (bundled with Rancher v2.12.3).
 
+### ⚠️ Critical Rules to Avoid Bundle Creation Failures
+
+#### 1. DO NOT Mix Helm Charts with Raw Manifests
+
+**WRONG** ❌:
 ```
-├── downstream/          # Workload applications for downstream clusters
-│   ├── nginx-ingress/   # Ingress controller (NodePort for Vagrant)
-│   └── nginx-example/   # Simple nginx test application
-└── local/               # Management cluster applications
-    ├── monitoring/      # Monitoring stack examples
-    └── cluster-services/# Cluster-wide services
+downstream/gitrepos/nginx-ingress/
+├── fleet.yaml          # Helm configuration
+├── namespace.yaml      # Raw manifest - CAUSES FAILURE!
+└── values.yaml
 ```
 
-## Quick Start
+**CORRECT** ✅:
+```
+downstream/gitrepos/nginx-ingress/
+├── fleet.yaml          # Helm configuration with defaultNamespace
+└── values.yaml
+```
 
-### Downstream Clusters (Workloads)
+**Why?** Fleet v0.13.4 cannot process directories that contain both:
+- Helm chart configurations (helm: section in fleet.yaml)
+- Raw Kubernetes manifests (YAML files with apiVersion/kind)
 
-Update `vagrant-config.yml`:
+This causes the Bundle to show **0/0 deployments** and never creates resources.
 
+**Solution:** Use `defaultNamespace` in fleet.yaml instead of creating namespace.yaml:
 ```yaml
-fleet:
-  enabled: true
-  downstream:
-    enabled: true
-    git_repo_url: "https://github.com/anasgrt/rancher-fleet-test.git"
-    git_repo:
-      paths:
-        - "downstream"
+defaultNamespace: my-namespace
+helm:
+  chart: my-chart
+  repo: https://...
 ```
 
-### Local Cluster (Management)
+---
 
+#### 2. DO NOT Use `targets` or `targetCustomizations` in fleet.yaml
+
+**WRONG** ❌:
 ```yaml
-fleet:
-  local:
-    enabled: true
-    git_repo_url: "https://github.com/anasgrt/rancher-fleet-test.git"
-    git_repo:
-      paths:
-        - "local"
-```
+# fleet.yaml
+targets:
+  - clusterSelector:
+      matchLabels:
+        env: dev
 
-## Cluster Labeling Strategy
+# OR
 
-This repository uses **simple environment labels**:
-
-- **downstream1**: `env=dev` (development workload cluster)
-- **downstream2**: `env=prd` (production workload cluster)
-- **local**: `env=management` (management cluster)
-
-## Applications
-
-### Downstream Clusters
-
-#### nginx-ingress
-- **Type**: Helm chart v4.11.3
-- **Target**: `env IN [dev, prd]` (all downstream clusters)
-- **Service Type**: NodePort (30080/30443) - Vagrant optimized
-- **Features**:
-  - No LoadBalancer wait (faster deployment)
-  - 2 replicas for HA
-  - Does NOT deploy to management cluster
-- **Access**: `http://<node-ip>:30080` or `https://<node-ip>:30443`
-
-**Why not on management cluster?**
-- Prevents port conflicts with Rancher's built-in ingress (80/443)
-- Avoids resource duplication
-- Cleaner separation of concerns
-
-#### nginx-example
-- **Type**: Kubernetes manifests
-- **Target**: `env IN [dev, prd]` (all downstream clusters)
-- **Purpose**: Simple test application
-- **Namespace**: fleet-test
-
-### Local Cluster (Management)
-
-#### monitoring
-- **Target**: `env=management`
-- **Purpose**: Monitoring stack for management cluster
-- **Namespace**: cattle-monitoring-system
-
-#### cluster-services
-- **Target**: `env=management`
-- **Purpose**: Cluster-wide utilities
-- **Namespace**: kube-system
-
-## Fleet Targeting Examples
-
-### All Downstream Clusters
-
-```yaml
 targetCustomizations:
-- name: all-downstream
-  clusterSelector:
-    matchExpressions:
-    - key: env
-      operator: In
-      values:
-      - dev
-      - prd
+  - name: dev-cluster
+    clusterSelector:
+      matchLabels:
+        env: dev
 ```
 
-### Specific Environment
+**CORRECT** ✅:
+```yaml
+# fleet.yaml - NO targeting fields
+defaultNamespace: my-namespace
+helm:
+  chart: my-chart
+  repo: https://...
+```
+
+**Why?** Fleet v0.13.4 automatically adds `targetRestrictions` when ClusterGroup resources exist. Adding `targets` or `targetCustomizations` creates conflicts.
+
+**Notes:**
+- `targetCustomizations` is a Fleet v0.14+ feature (not available in v0.13.4)
+- `targets` conflicts with ClusterGroup-based targeting in v0.13.4
+- Both cause the Bundle to show **0/0 deployments**
+
+---
+
+## How Fleet v0.13.4 Targeting Works
+
+Fleet v0.13.4 uses **ClusterGroup resources** created by the infrastructure, NOT fields in fleet.yaml.
+
+### Architecture
+
+```
+Infrastructure Code (rancher_vagrant_environment)
+    ↓
+Creates ClusterGroup resources with label selectors
+    ↓
+Fleet automatically applies targetRestrictions to Bundles
+    ↓
+Bundles deploy to clusters matching ClusterGroup selectors
+```
+
+### Example: ClusterGroup Resource
 
 ```yaml
-targetCustomizations:
-- name: dev-only
-  clusterSelector:
+apiVersion: fleet.cattle.io/v1alpha1
+kind: ClusterGroup
+metadata:
+  name: default
+  namespace: fleet-default
+spec:
+  selector:
     matchLabels:
       env: dev
 ```
 
-### Management Cluster
+This ClusterGroup automatically targets all clusters labeled `env=dev`.
+
+### How to Control Targeting
+
+**Option 1: Use existing ClusterGroup** (recommended)
+- Infrastructure creates ClusterGroup "default" with env=dev selector
+- nginx-ingress deploys only to dev cluster
+- No changes needed in fleet.yaml
+
+**Option 2: Create new ClusterGroup**
+```yaml
+# In infrastructure repo: kubectl apply -f -
+apiVersion: fleet.cattle.io/v1alpha1
+kind: ClusterGroup
+metadata:
+  name: production
+  namespace: fleet-default
+spec:
+  selector:
+    matchLabels:
+      env: prd
+```
+
+**Option 3: Change cluster labels**
+```bash
+# Label cluster to match different ClusterGroup
+kubectl label cluster c-xxxxx env=prd -n fleet-default
+```
+
+---
+
+## Directory Structure
+
+```
+rancher-fleet-test/
+├── README.md                          # This file
+├── downstream/                        # Applications for downstream clusters
+│   └── gitrepos/
+│       └── nginx-ingress/             # Example: Helm chart
+│           ├── fleet.yaml             # Fleet configuration (NO targets!)
+│           └── values.yaml            # Helm values
+│
+└── local/                             # Applications for management cluster
+    └── gitrepos/
+        ├── cluster-services/          # Example: Raw manifests
+        │   ├── fleet.yaml             # Fleet configuration (NO targets!)
+        │   └── example-service.yaml   # Kubernetes manifest
+        │
+        └── monitoring/                # Example: Raw manifests
+            ├── fleet.yaml             # Fleet configuration (NO targets!)
+            └── prometheus.yaml        # Kubernetes manifest
+```
+
+---
+
+## fleet.yaml Templates
+
+### For Helm Charts
 
 ```yaml
-targetCustomizations:
-- name: management
-  clusterSelector:
-    matchLabels:
-      env: management
+# Fleet v0.13.4 Configuration
+# IMPORTANT: DO NOT add namespace.yaml or other raw manifests to this directory
+# IMPORTANT: DO NOT add 'targets' or 'targetCustomizations' fields
+
+defaultNamespace: my-namespace  # Creates namespace automatically
+keepResources: false
+
+helm:
+  chart: my-chart
+  repo: https://charts.example.com
+  version: 1.0.0
+  releaseName: my-release
+  wait: false
+  timeoutSeconds: 600
+  valuesFiles:
+    - values.yaml
 ```
 
-## Monitoring Deployments
+### For Raw Kubernetes Manifests
 
-```bash
-# View all Fleet clusters with labels
-kubectl get clusters.fleet.cattle.io -n fleet-default --show-labels
+```yaml
+# Fleet v0.13.4 Configuration
+# IMPORTANT: DO NOT add Helm configuration to this directory
+# IMPORTANT: DO NOT add 'targets' or 'targetCustomizations' fields
 
-# Expected output:
-# downstream1 ... env=dev
-# downstream2 ... env=prd
-# local       ... env=management (if fleet.local enabled)
-
-# Check GitRepo resources
-kubectl get gitrepos -n fleet-default
-
-# Monitor bundle deployments
-kubectl get bundles -n fleet-default
-
-# Check specific bundle
-kubectl describe bundle <bundle-name> -n fleet-default
+defaultNamespace: my-namespace
+keepResources: false
 ```
+
+---
 
 ## Troubleshooting
 
-### Bundles Not Deploying
+### Bundle Shows 0/0 Deployments
 
+**Symptom:** Bundle resource exists but shows `0/0` in status
 ```bash
-# Check cluster labels match targeting
-kubectl get clusters.fleet.cattle.io -n fleet-default --show-labels
+kubectl get bundles -n fleet-default
+# NAME                          BUNDLEDEPLOYMENTS-READY   STATUS
+# my-app-default-12345abc       0/0
+```
 
-# Verify GitRepo status
+**Common Causes:**
+
+1. **Mixed Helm + raw manifests** (most common)
+   ```bash
+   # Check directory contents
+   ls -la downstream/gitrepos/nginx-ingress/
+   # If you see namespace.yaml or other .yaml files besides fleet.yaml and values*.yaml
+   # DELETE the raw manifest files
+   ```
+
+2. **Using targets or targetCustomizations**
+   ```bash
+   # Check fleet.yaml
+   grep -E 'targets:|targetCustomizations:' downstream/gitrepos/nginx-ingress/fleet.yaml
+   # If found, REMOVE these fields from fleet.yaml
+   ```
+
+3. **YAML syntax errors**
+   ```bash
+   # Validate YAML syntax
+   yq eval '.' downstream/gitrepos/nginx-ingress/fleet.yaml
+   ```
+
+### GitRepo Not Cloning
+
+**Check GitRepo status:**
+```bash
 kubectl get gitrepos -n fleet-default -o yaml
-
-# Force sync
-kubectl annotate gitrepo downstream-manifests -n fleet-default \
-  force-sync=$(date +%s) --overwrite
 ```
 
-### nginx-ingress Access Issues
-
-The nginx-ingress uses **NodePort** for Vagrant/bare-metal:
-
+**Check Fleet controller logs:**
 ```bash
-# Get node IP
-kubectl get nodes -o wide --context downstream1
-
-# Test access
-curl http://192.168.56.20:30080
+kubectl logs -n cattle-fleet-system -l app=fleet-controller --tail=50
 ```
 
-## Development Workflow
+### Bundle Created But Not Deploying
 
-1. Make changes to manifests/values
-2. Commit and push to GitHub
-3. Fleet auto-syncs (15s polling interval)
-4. Monitor deployment:
-
+**Check ClusterGroup:**
 ```bash
-watch kubectl get bundles -n fleet-default
+# List ClusterGroups
+kubectl get clustergroups -n fleet-default
+
+# Check if clusters match selector
+kubectl get clusters -n fleet-default --show-labels
 ```
 
-## Best Practices
+**Check Bundle targeting:**
+```bash
+kubectl get bundle my-app-default-12345abc -n fleet-default -o yaml | grep -A 10 targetRestrictions
+```
 
-1. **Separate Concerns**: Management apps in `local/`, workloads in `downstream/`
-2. **Use Environment Labels**: Simple `env` label for all targeting
-3. **Test Locally**: Validate in Vagrant before production
-4. **Version Control**: Always commit before testing
-5. **Monitor**: Check bundle status regularly
+---
 
-## Configuration Files
+## Migration to Fleet v0.14+
 
-All applications use `fleet.yaml` for Fleet-specific configuration:
+When Rancher upgrades to include Fleet v0.14+:
 
-- **Targeting**: Define which clusters receive the application
-- **Customization**: Environment-specific values
-- **Dependencies**: Order of deployment (if needed)
+### What Changes
+- `targetCustomizations` becomes available in fleet.yaml
+- More flexible per-application targeting
+- ClusterGroup pattern still works (backward compatible)
 
-## License
+### Migration Options
 
-Test repository for Rancher Fleet GitOps demonstrations.
+**Option 1: Keep ClusterGroup pattern** (recommended)
+- No changes needed
+- Infrastructure continues to create ClusterGroups
+- fleet.yaml files remain simple
+
+**Option 2: Migrate to targetCustomizations**
+```yaml
+# fleet.yaml with Fleet v0.14+
+defaultNamespace: my-namespace
+
+targetCustomizations:
+  - name: dev-deployment
+    clusterSelector:
+      matchLabels:
+        env: dev
+    helm:
+      values:
+        replicas: 1
+
+  - name: prd-deployment
+    clusterSelector:
+      matchLabels:
+        env: prd
+    helm:
+      values:
+        replicas: 3
+
+helm:
+  chart: my-chart
+  repo: https://...
+```
+
+---
+
+## Reference
+
+- **Fleet v0.13.4 Documentation**: https://fleet.rancher.io (v0.13 branch)
+- **Infrastructure Repository**: rancher_vagrant_environment
+- **Validation Script**: `scripts/validate_fleet_repo.sh` in infrastructure repo
+
+---
+
+## Quick Checklist
+
+Before pushing changes to this repository:
+
+- [ ] ✅ NO namespace.yaml or other raw manifests in Helm chart directories
+- [ ] ✅ NO `targets` field in fleet.yaml
+- [ ] ✅ NO `targetCustomizations` field in fleet.yaml
+- [ ] ✅ Helm charts use `defaultNamespace` instead of separate namespace.yaml
+- [ ] ✅ YAML syntax is valid (`yq eval '.' fleet.yaml`)
+- [ ] ✅ Run validation script: `/vagrant/scripts/validate_fleet_repo.sh`
+
+---
+
+## Support
+
+For issues or questions:
+1. Check this README's Troubleshooting section
+2. Validate configuration: `/vagrant/scripts/validate_fleet_repo.sh`
+3. Review Fleet controller logs: `kubectl logs -n cattle-fleet-system -l app=fleet-controller`
+4. Check infrastructure repo documentation: `rancher_vagrant_environment/scripts/README.md`
