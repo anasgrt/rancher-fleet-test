@@ -1,16 +1,16 @@
-# Fleet Configuration for nginx-example
-# Simple test application for downstream clusters
+# # Fleet Configuration for nginx-example
+# # Simple test application for downstream clusters
 
-# Target namespace for deployment
-namespace: fleet-test
+# # Target namespace for deployment
+# namespace: fleet-test
 
-# Target downstream clusters (both dev and prd)
-targets:
-- name: all-downstream
-  clusterSelector:
-    matchExpressions:
-    - key: env
-      operator: In
-      values:
-      - dev
-      - prd
+# # Target downstream clusters (both dev and prd)
+# targets:
+# - name: all-downstream
+#   clusterSelector:
+#     matchExpressions:
+#     - key: env
+#       operator: In
+#       values:
+#       - dev
+#       - prd
