@@ -12,10 +12,3 @@ helm:
   timeoutSeconds: 600
   valuesFiles:
   - values.yaml
-
-# Target only dev cluster using Fleet v0.13 'targets' syntax
-targets:
-- name: dev-only
-  clusterSelector:
-    matchLabels:
-      env: dev
