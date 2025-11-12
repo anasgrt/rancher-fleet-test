@@ -2,7 +2,7 @@
 # Targets: Management cluster only (env=management)
 
 # Target namespace for deployment
-namespace: cattle-monitoring-system
+defaultNamespace: cattle-monitoring-system
 
 # Target management cluster
 targets:
