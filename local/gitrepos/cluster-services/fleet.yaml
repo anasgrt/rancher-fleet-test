@@ -1,12 +1,12 @@
-# Fleet Configuration for Cluster Services
-# Targets: Management cluster only (env=management)
+# Cluster-wide services for management cluster
+defaultNamespace: kube-system
 
-# Target namespace for deployment
-namespace: kube-system
+# Clean up resources when bundle removed
+keepResources: false
 
-# Target management cluster
-targets:
-- name: management-cluster
+# Target management cluster only
+targetCustomizations:
+- name: management-only
   clusterSelector:
     matchLabels:
       env: management

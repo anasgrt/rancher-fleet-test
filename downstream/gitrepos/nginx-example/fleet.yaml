@@ -1,16 +1,16 @@
-# # Fleet Configuration for nginx-example
-# # Simple test application for downstream clusters
+# Simple nginx test application
+defaultNamespace: fleet-test
 
-# # Target namespace for deployment
-# namespace: fleet-test
+# Clean up resources when bundle removed
+keepResources: false
 
-# # Target downstream clusters (both dev and prd)
-# targets:
-# - name: all-downstream
-#   clusterSelector:
-#     matchExpressions:
-#     - key: env
-#       operator: In
-#       values:
-#       - dev
-#       - prd
+# Target all downstream clusters (dev and prd)
+targetCustomizations:
+- name: all-downstream
+  clusterSelector:
+    matchExpressions:
+    - key: env
+      operator: In
+      values:
+      - dev
+      - prd

@@ -1,12 +1,12 @@
-# Fleet Configuration for Monitoring Stack
-# Targets: Management cluster only (env=management)
-
-# Target namespace for deployment
+# Monitoring stack for management cluster
 defaultNamespace: cattle-monitoring-system
 
-# Target management cluster
-targets:
-- name: management-cluster
+# Clean up resources when bundle removed
+keepResources: false
+
+# Target management cluster only
+targetCustomizations:
+- name: management-only
   clusterSelector:
     matchLabels:
       env: management
