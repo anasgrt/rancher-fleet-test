@@ -11,12 +11,18 @@ helm:
   - values.yaml
 
 # Target downstream clusters (both dev and prd)
-targets:
-- name: downstream-clusters
+# targets:
+# - name: downstream-clusters
+#   clusterSelector:
+#     matchExpressions:
+#     - key: env
+#       operator: In
+#       values:
+#       - dev
+#       - prd
+
+targetCustomizations:
+- name: dev-only
   clusterSelector:
-    matchExpressions:
-    - key: env
-      operator: In
-      values:
-      - dev
-      # - prd
+    matchLabels:
+      env: dev
