@@ -19,4 +19,4 @@ targets:
       operator: In
       values:
       - dev
-      - prd
+      # - prd
