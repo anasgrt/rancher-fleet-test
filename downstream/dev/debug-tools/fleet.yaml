@@ -1,11 +1,6 @@
 # Fleet Configuration for debug-tools
-# Deploys ONLY to dev clusters using targetCustomizations
+# Targeting: Controlled by GitRepo 'downstream-dev' which targets clusterSelector: env=dev
+# This bundle deploys ONLY to dev clusters via GitRepo-level targeting
 
 defaultNamespace: debug-tools
 keepResources: false
-
-targetCustomizations:
-- name: dev
-  clusterSelector:
-    matchLabels:
-      env: dev

@@ -1,11 +1,6 @@
 # Fleet Configuration for production-app
-# Deploys ONLY to prd clusters using targetCustomizations
+# Targeting: Controlled by GitRepo 'downstream-prd' which targets clusterSelector: env=prd
+# This bundle deploys ONLY to prd clusters via GitRepo-level targeting
 
 defaultNamespace: production-app
 keepResources: false
-
-targetCustomizations:
-- name: prd
-  clusterSelector:
-    matchLabels:
-      env: prd
