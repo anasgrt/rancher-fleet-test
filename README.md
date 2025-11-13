@@ -14,23 +14,26 @@ rancher-fleet-test/
 ├── README.md
 │
 ├── downstream/
-│   ├── common/                    # Apps for ALL downstream clusters
-│   │   └── nginx-ingress/         # Ingress controller
-│   │       ├── fleet.yaml
-│   │       └── values.yaml
+│   ├── common/
+│   │   └── gitrepos/              # Apps for ALL downstream clusters
+│   │       └── nginx-ingress/     # Ingress controller
+│   │           ├── fleet.yaml
+│   │           └── values.yaml
 │   │
-│   ├── dev/                       # Apps ONLY for dev clusters
-│   │   └── debug-tools/           # Debug utilities
-│   │       ├── deployment.yaml
-│   │       └── fleet.yaml
+│   ├── dev/
+│   │   └── gitrepos/              # Apps ONLY for dev clusters
+│   │       └── debug-tools/       # Debug utilities
+│   │           ├── deployment.yaml
+│   │           └── fleet.yaml
 │   │
-│   └── prd/                       # Apps ONLY for prd clusters
-│       └── prd-app/        # Production application
-│           ├── deployment.yaml
-│           └── fleet.yaml
+│   └── prd/
+│       └── gitrepos/              # Apps ONLY for prd clusters
+│           └── prd-app/           # Production application
+│               ├── deployment.yaml
+│               └── fleet.yaml
 │
-└── local/                         # Apps for management cluster
-    └── gitrepos/
+└── local/
+    └── gitrepos/                  # Apps for management cluster
         └── ...
 ```
 
@@ -42,9 +45,9 @@ This repository is deployed using **three separate Fleet GitRepos**, each target
 
 | GitRepo Name | Path | Targets | Deploys To |
 |--------------|------|---------|------------|
-| `common` | `downstream/common` | ClusterGroup: `default` | All clusters (dev + prd) |
-| `dev` | `downstream/dev` | clusterSelector: `env=dev` | Dev clusters only |
-| `prd` | `downstream/prd` | clusterSelector: `env=prd` | Prd clusters only |
+| `common` | `downstream/common/gitrepos` | ClusterGroup: `default` | All clusters (dev + prd) |
+| `dev` | `downstream/dev/gitrepos` | clusterSelector: `env=dev` | Dev clusters only |
+| `prd` | `downstream/prd/gitrepos` | clusterSelector: `env=prd` | Prd clusters only |
 
 ### GitRepo Configuration
 
@@ -60,7 +63,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/common]
+  paths: [downstream/common/gitrepos]
   targets:
     - clusterGroup: default  # Matches both dev and prd
 
@@ -74,7 +77,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/dev]
+  paths: [downstream/dev/gitrepos]
   targets:
     - clusterSelector:
         matchLabels:
@@ -90,7 +93,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/prd]
+  paths: [downstream/prd/gitrepos]
   targets:
     - clusterSelector:
         matchLabels:
@@ -239,7 +242,7 @@ kubectl get clusters.fleet.cattle.io -n fleet-default --show-labels
 **Check for mixed content:**
 ```bash
 # Look for unwanted raw manifests in Helm directories
-ls -la downstream/common/nginx-ingress/
+ls -la downstream/common/gitrepos/nginx-ingress/
 # Should only see: fleet.yaml, values.yaml
 # Remove any namespace.yaml or other .yaml files
 ```
@@ -247,7 +250,7 @@ ls -la downstream/common/nginx-ingress/
 **Check for targeting in fleet.yaml:**
 ```bash
 # These fields should NOT exist
-grep -E 'targetCustomizations:|targets:' downstream/*/*/fleet.yaml
+grep -E 'targetCustomizations:|targets:' downstream/*/gitrepos/*/fleet.yaml
 ```
 
 ### App Deployed to Wrong Clusters
@@ -284,10 +287,10 @@ kubectl logs -n cattle-fleet-system -l app=fleet-controller --tail=50
 kubectl get bundles -n fleet-default
 
 # Expected output:
-# NAME                                    READY   STATUS
-# common-nginx-ingress-...     2/2     # Both dev and prd
-# dev-debug-tools-...          1/1     # Dev only
-# prd-prd-app-...       1/1     # Prd only
+# NAME                                              READY   STATUS
+# common-downstream-common-gitrepos-nginx-ingress   2/2     # Both dev and prd
+# dev-downstream-dev-gitrepos-debug-tools           1/1     # Dev only
+# prd-downstream-prd-gitrepos-prd-app               1/1     # Prd only
 ```
 
 ### Verify Pods on Clusters
@@ -299,28 +302,28 @@ kubectl get pods -A | grep -E 'nginx|netshoot'
 
 # Prd cluster  
 export KUBECONFIG=/vagrant/kubeconfig2
-kubectl get pods -A | grep -E 'nginx|production'
+kubectl get pods -A | grep -E 'nginx|prd-app'
 ```
 
 ## Adding New Applications
 
 ### To ALL Clusters
 
-1. Create directory under `downstream/common/`
+1. Create directory under `downstream/common/gitrepos/`
 2. Add fleet.yaml and application files
 3. Commit and push
 4. GitRepo `common` will deploy to all clusters
 
 ### To DEV Clusters Only
 
-1. Create directory under `downstream/dev/`
+1. Create directory under `downstream/dev/gitrepos/`
 2. Add fleet.yaml and application files  
 3. Commit and push
 4. GitRepo `dev` will deploy to dev clusters only
 
 ### To PRD Clusters Only
 
-1. Create directory under `downstream/prd/`
+1. Create directory under `downstream/prd/gitrepos/`
 2. Add fleet.yaml and application files
 3. Commit and push
 4. GitRepo `prd` will deploy to prd clusters only
@@ -339,7 +342,7 @@ Before committing changes:
 - [ ] ✅ NO `targetCustomizations` in fleet.yaml
 - [ ] ✅ NO `targets` in fleet.yaml
 - [ ] ✅ Helm charts use `defaultNamespace` 
-- [ ] ✅ Application in correct directory (common/dev/prd)
+- [ ] ✅ Application in correct directory (common/dev/prd gitrepos)
 - [ ] ✅ YAML syntax is valid
 
 Remember: **Targeting is controlled by GitRepos, not fleet.yaml files.**
