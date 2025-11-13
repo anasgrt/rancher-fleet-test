@@ -5,7 +5,7 @@
 #    (Helm charts cannot be mixed with raw manifests in Fleet)
 # 2. Use 'defaultNamespace' instead of creating namespace.yaml
 #
-# Targeting: Controlled by GitRepo 'downstream-common' which targets ClusterGroup 'default'
+# Targeting: Controlled by GitRepo 'common' which targets ClusterGroup 'default'
 # This bundle deploys to ALL downstream clusters (dev and prd)
 #
 # See: README.md for complete documentation

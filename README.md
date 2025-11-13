@@ -42,20 +42,20 @@ This repository is deployed using **three separate Fleet GitRepos**, each target
 
 | GitRepo Name | Path | Targets | Deploys To |
 |--------------|------|---------|------------|
-| `downstream-common` | `downstream/common` | ClusterGroup: `default` | All clusters (dev + prd) |
-| `downstream-dev` | `downstream/dev` | clusterSelector: `env=dev` | Dev clusters only |
-| `downstream-prd` | `downstream/prd` | clusterSelector: `env=prd` | Prd clusters only |
+| `common` | `downstream/common` | ClusterGroup: `default` | All clusters (dev + prd) |
+| `dev` | `downstream/dev` | clusterSelector: `env=dev` | Dev clusters only |
+| `prd` | `downstream/prd` | clusterSelector: `env=prd` | Prd clusters only |
 
 ### GitRepo Configuration
 
 The GitRepos are configured in the infrastructure repository (`rancher_vagrant_environment/scripts/fleet_init.sh`):
 
 ```yaml
-# downstream-common GitRepo
+# common GitRepo
 apiVersion: fleet.cattle.io/v1alpha1
 kind: GitRepo
 metadata:
-  name: downstream-common
+  name: common
   namespace: fleet-default
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
@@ -65,11 +65,11 @@ spec:
     - clusterGroup: default  # Matches both dev and prd
 
 ---
-# downstream-dev GitRepo
+# dev GitRepo
 apiVersion: fleet.cattle.io/v1alpha1
 kind: GitRepo
 metadata:
-  name: downstream-dev
+  name: dev
   namespace: fleet-default
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
@@ -81,11 +81,11 @@ spec:
           env: dev
 
 ---
-# downstream-prd GitRepo
+# prd GitRepo
 apiVersion: fleet.cattle.io/v1alpha1
 kind: GitRepo
 metadata:
-  name: downstream-prd
+  name: prd
   namespace: fleet-default
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
@@ -267,7 +267,7 @@ kubectl get clusters.fleet.cattle.io -n fleet-default -o custom-columns='NAME:.m
 **Check GitRepo status:**
 ```bash
 kubectl get gitrepos -n fleet-default
-kubectl describe gitrepo downstream-common -n fleet-default
+kubectl describe gitrepo common -n fleet-default
 ```
 
 **Check Fleet controller logs:**
@@ -285,9 +285,9 @@ kubectl get bundles -n fleet-default
 
 # Expected output:
 # NAME                                    READY   STATUS
-# downstream-common-nginx-ingress-...     2/2     # Both dev and prd
-# downstream-dev-debug-tools-...          1/1     # Dev only
-# downstream-prd-production-app-...       1/1     # Prd only
+# common-nginx-ingress-...     2/2     # Both dev and prd
+# dev-debug-tools-...          1/1     # Dev only
+# prd-production-app-...       1/1     # Prd only
 ```
 
 ### Verify Pods on Clusters
@@ -309,21 +309,21 @@ kubectl get pods -A | grep -E 'nginx|production'
 1. Create directory under `downstream/common/`
 2. Add fleet.yaml and application files
 3. Commit and push
-4. GitRepo `downstream-common` will deploy to all clusters
+4. GitRepo `common` will deploy to all clusters
 
 ### To DEV Clusters Only
 
 1. Create directory under `downstream/dev/`
 2. Add fleet.yaml and application files  
 3. Commit and push
-4. GitRepo `downstream-dev` will deploy to dev clusters only
+4. GitRepo `dev` will deploy to dev clusters only
 
 ### To PRD Clusters Only
 
 1. Create directory under `downstream/prd/`
 2. Add fleet.yaml and application files
 3. Commit and push
-4. GitRepo `downstream-prd` will deploy to prd clusters only
+4. GitRepo `prd` will deploy to prd clusters only
 
 ## Reference
 
