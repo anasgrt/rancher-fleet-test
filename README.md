@@ -13,24 +13,23 @@ This repository contains Fleet-managed Kubernetes applications for the Rancher m
 rancher-fleet-test/
 ├── README.md
 │
-├── downstream/
-│   ├── common/
-│   │   └── gitrepos/              # Apps for ALL downstream clusters
-│   │       └── nginx-ingress/     # Ingress controller
-│   │           ├── fleet.yaml
-│   │           └── values.yaml
-│   │
-│   ├── dev/
-│   │   └── gitrepos/              # Apps ONLY for dev clusters
-│   │       └── debug-tools/       # Debug utilities
-│   │           ├── deployment.yaml
-│   │           └── fleet.yaml
-│   │
-│   └── prd/
-│       └── gitrepos/              # Apps ONLY for prd clusters
-│           └── prd-app/           # Production application
-│               ├── deployment.yaml
-│               └── fleet.yaml
+├── common/
+│   └── gitrepos/                  # Apps for ALL downstream clusters
+│       └── nginx-ingress/         # Ingress controller
+│           ├── fleet.yaml
+│           └── values.yaml
+│
+├── dev/
+│   └── gitrepos/                  # Apps ONLY for dev clusters
+│       └── debug-tools/           # Debug utilities
+│           ├── deployment.yaml
+│           └── fleet.yaml
+│
+├── prd/
+│   └── gitrepos/                  # Apps ONLY for prd clusters
+│       └── prd-app/               # Production application
+│           ├── deployment.yaml
+│           └── fleet.yaml
 │
 └── local/
     └── gitrepos/                  # Apps for management cluster
@@ -45,9 +44,9 @@ This repository is deployed using **three separate Fleet GitRepos**, each target
 
 | GitRepo Name | Path | Targets | Deploys To |
 |--------------|------|---------|------------|
-| `common` | `downstream/common/gitrepos` | ClusterGroup: `default` | All clusters (dev + prd) |
-| `dev` | `downstream/dev/gitrepos` | clusterSelector: `env=dev` | Dev clusters only |
-| `prd` | `downstream/prd/gitrepos` | clusterSelector: `env=prd` | Prd clusters only |
+| `common` | `common/gitrepos` | ClusterGroup: `default` | All clusters (dev + prd) |
+| `dev` | `dev/gitrepos` | clusterSelector: `env=dev` | Dev clusters only |
+| `prd` | `prd/gitrepos` | clusterSelector: `env=prd` | Prd clusters only |
 
 ### GitRepo Configuration
 
@@ -63,7 +62,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/common/gitrepos]
+  paths: [common/gitrepos]
   targets:
     - clusterGroup: default  # Matches both dev and prd
 
@@ -77,7 +76,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/dev/gitrepos]
+  paths: [dev/gitrepos]
   targets:
     - clusterSelector:
         matchLabels:
@@ -93,7 +92,7 @@ metadata:
 spec:
   repo: https://github.com/anasgrt/rancher-fleet-test.git
   branch: main
-  paths: [downstream/prd/gitrepos]
+  paths: [prd/gitrepos]
   targets:
     - clusterSelector:
         matchLabels:
@@ -117,6 +116,17 @@ spec:
       operator: In
       values: [dev, prd]
 ```
+
+## Bundle Naming
+
+Fleet creates bundle names using the pattern: `<gitrepo-name>-<path-with-dashes>-<app-name>`
+
+With our structure, bundle names will be:
+- `common-gitrepos-nginx-ingress` (deploys to both dev and prd)
+- `dev-gitrepos-debug-tools` (deploys to dev only)
+- `prd-gitrepos-prd-app` (deploys to prd only)
+
+Clean and simple! ✨
 
 ## Important: fleet.yaml Simplification
 
@@ -242,7 +252,7 @@ kubectl get clusters.fleet.cattle.io -n fleet-default --show-labels
 **Check for mixed content:**
 ```bash
 # Look for unwanted raw manifests in Helm directories
-ls -la downstream/common/gitrepos/nginx-ingress/
+ls -la common/gitrepos/nginx-ingress/
 # Should only see: fleet.yaml, values.yaml
 # Remove any namespace.yaml or other .yaml files
 ```
@@ -250,7 +260,7 @@ ls -la downstream/common/gitrepos/nginx-ingress/
 **Check for targeting in fleet.yaml:**
 ```bash
 # These fields should NOT exist
-grep -E 'targetCustomizations:|targets:' downstream/*/gitrepos/*/fleet.yaml
+grep -E 'targetCustomizations:|targets:' */gitrepos/*/fleet.yaml
 ```
 
 ### App Deployed to Wrong Clusters
@@ -287,10 +297,10 @@ kubectl logs -n cattle-fleet-system -l app=fleet-controller --tail=50
 kubectl get bundles -n fleet-default
 
 # Expected output:
-# NAME                                              READY   STATUS
-# common-downstream-common-gitrepos-nginx-ingress   2/2     # Both dev and prd
-# dev-downstream-dev-gitrepos-debug-tools           1/1     # Dev only
-# prd-downstream-prd-gitrepos-prd-app               1/1     # Prd only
+# NAME                            READY   STATUS
+# common-gitrepos-nginx-ingress   2/2     # Both dev and prd
+# dev-gitrepos-debug-tools        1/1     # Dev only
+# prd-gitrepos-prd-app            1/1     # Prd only
 ```
 
 ### Verify Pods on Clusters
@@ -309,21 +319,21 @@ kubectl get pods -A | grep -E 'nginx|prd-app'
 
 ### To ALL Clusters
 
-1. Create directory under `downstream/common/gitrepos/`
+1. Create directory under `common/gitrepos/`
 2. Add fleet.yaml and application files
 3. Commit and push
 4. GitRepo `common` will deploy to all clusters
 
 ### To DEV Clusters Only
 
-1. Create directory under `downstream/dev/gitrepos/`
+1. Create directory under `dev/gitrepos/`
 2. Add fleet.yaml and application files  
 3. Commit and push
 4. GitRepo `dev` will deploy to dev clusters only
 
 ### To PRD Clusters Only
 
-1. Create directory under `downstream/prd/gitrepos/`
+1. Create directory under `prd/gitrepos/`
 2. Add fleet.yaml and application files
 3. Commit and push
 4. GitRepo `prd` will deploy to prd clusters only
