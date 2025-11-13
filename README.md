@@ -14,7 +14,7 @@ rancher-fleet-test/
 ├── README.md
 │
 ├── common/
-│   └── gitrepos/                  # Apps for ALL downstream clusters
+│   └── gitrepos/                  # Apps for ALL key clusters
 │       └── nginx-ingress/         # Ingress controller
 │           ├── fleet.yaml
 │           └── values.yaml
