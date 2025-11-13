@@ -25,7 +25,7 @@ rancher-fleet-test/
 │   │       └── fleet.yaml
 │   │
 │   └── prd/                       # Apps ONLY for prd clusters
-│       └── production-app/        # Production application
+│       └── prd-app/        # Production application
 │           ├── deployment.yaml
 │           └── fleet.yaml
 │
@@ -287,7 +287,7 @@ kubectl get bundles -n fleet-default
 # NAME                                    READY   STATUS
 # common-nginx-ingress-...     2/2     # Both dev and prd
 # dev-debug-tools-...          1/1     # Dev only
-# prd-production-app-...       1/1     # Prd only
+# prd-prd-app-...       1/1     # Prd only
 ```
 
 ### Verify Pods on Clusters
