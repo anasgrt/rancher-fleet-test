@@ -1,0 +1,11 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: hello-kargo
+  namespace: hello-kargo
+spec:
+  # Monitor the main branch of the Git repository
+  subscriptions:
+  - git:
+      repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+      branch: main

@@ -1,0 +1,37 @@
+# Acceptance (acc) stage - subscribes directly to the warehouse
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: acc
+  namespace: hello-kargo
+spec:
+  # Subscribe to the warehouse for new commits
+  subscriptions:
+    warehouse: hello-kargo
+  
+  # Use the gitops-promotion task for promotions
+  promotionTemplate:
+    spec:
+      tasks:
+      - name: promote
+        uses: gitops-promotion
+
+---
+# Production (prd) stage - subscribes to acc stage
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prd
+  namespace: hello-kargo
+spec:
+  # Subscribe to acc stage for verified changes
+  subscriptions:
+    upstreamStages:
+    - name: acc
+  
+  # Use the gitops-promotion task for promotions
+  promotionTemplate:
+    spec:
+      tasks:
+      - name: promote
+        uses: gitops-promotion

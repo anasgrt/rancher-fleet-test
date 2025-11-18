@@ -1,0 +1,46 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: gitops-promotion
+  namespace: hello-kargo
+spec:
+  steps:
+  # Step 1: Clone the repository
+  - uses: git-clone
+    as: clone
+    config:
+      repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+      checkout:
+      - branch: main
+        path: ./src
+      - branch: stage/\${{ ctx.stage }}
+        create: true
+        path: ./out
+
+  # Step 2: Clear the output directory
+  - uses: git-clear
+    as: clear
+    config:
+      path: ./out
+
+  # Step 3: Copy files from source to output
+  - uses: copy
+    as: copy-manifests
+    config:
+      inPath: ./src
+      outPath: ./out
+
+  # Step 4: Commit the changes
+  - uses: git-commit
+    as: commit
+    config:
+      path: ./out
+      messageFromSteps:
+      - copy-manifests
+
+  # Step 5: Push to the stage branch
+  - uses: git-push
+    as: push
+    config:
+      path: ./out
+      targetBranch: stage/\${{ ctx.stage }}

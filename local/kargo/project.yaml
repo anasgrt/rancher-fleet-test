@@ -1,0 +1,9 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: hello-kargo
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-kargo

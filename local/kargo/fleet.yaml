@@ -1,0 +1,7 @@
+defaultNamespace: kargo
+
+targetCustomizations:
+- name: local-only
+  clusterSelector:
+    matchLabels:
+      cluster-type: local
