@@ -5,8 +5,12 @@ metadata:
   name: acc
   namespace: hello-kargo
 spec:
-  subscriptions:
-    warehouse: hello-kargo
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      direct: true
 
   promotionTemplate:
     spec:
@@ -43,9 +47,13 @@ metadata:
   name: prd
   namespace: hello-kargo
 spec:
-  subscriptions:
-    upstreamStages:
-    - name: acc
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      stages:
+      - acc
 
   promotionTemplate:
     spec:
