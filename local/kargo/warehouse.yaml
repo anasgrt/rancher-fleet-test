@@ -3,7 +3,12 @@ kind: Warehouse
 metadata:
   name: hello-kargo
   namespace: hello-kargo
+  annotations:
+    # Kargo will retry automatically when secret becomes available
+    kargo.akuity.io/description: "Monitors main branch for new commits"
 spec:
+  # Refresh interval - Kargo will retry if credentials fail
+  interval: 5m
   # Monitor the main branch of the Git repository
   subscriptions:
   - git:

@@ -1,7 +1,20 @@
-defaultNamespace: kargo
+# No defaultNamespace - resources specify their own namespaces
 
 targetCustomizations:
 - name: local-only
   clusterSelector:
     matchLabels:
       cluster-type: local
+
+# Ignore auto-generated and secret fields in diffs
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: Secret
+    operations:
+    - {"op": "remove", "path": "/data"}
+  - apiVersion: v1
+    kind: ServiceAccount
+    operations:
+    - {"op": "remove", "path": "/secrets"}
+    - {"op": "remove", "path": "/imagePullSecrets"}

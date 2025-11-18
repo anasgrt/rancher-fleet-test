@@ -1,9 +1,12 @@
-apiVersion: kargo.akuity.io/v1alpha1
-kind: Project
-metadata:
-  name: hello-kargo
----
+# Create namespace first
 apiVersion: v1
 kind: Namespace
 metadata:
   name: hello-kargo
+---
+# Project depends on namespace existing
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: hello-kargo
+  namespace: hello-kargo
