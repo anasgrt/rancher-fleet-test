@@ -1,8 +1,7 @@
 # Deploy Kargo resources after CRDs are installed
 
-# Wait for Helm chart to install CRDs first
 dependsOn:
-- name: local-manifests-local-gitrepos-kargo-helm
+- name: kargo-helm
 
 targetCustomizations:
 - name: local-only
