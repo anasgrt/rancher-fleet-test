@@ -7,11 +7,12 @@
 The Kargo Fleet refactor is production-ready after applying critical fixes:
 
 1. REMOVED git-credentials.yaml with exposed SSH key
-2. PINNED Helm chart version to 1.0.0  
+2. PINNED Helm chart version to 1.0.0
 3. ADDED health checks to secret provisioning
 4. CONFIGURED proper namespace creation ordering
 5. ADDED Fleet diff configuration for secrets
 6. MADE Warehouse resilient to timing issues
+7. **DISABLED old script-based installation to prevent conflicts**
 
 ## Security: PASSED
 
@@ -32,7 +33,7 @@ This is appropriate for single-cluster dev/test environments.
 - Deleted git-credentials.yaml containing SSH private key
 - Verified file not in manifest directory
 
-### 2. Ordering (P1) 
+### 2. Ordering (P1)
 - Added 'createNamespace: true' to HelmChart
 - Reordered project.yaml (namespace first, then Project)
 - Added health checks to kargo_secrets.sh
@@ -45,6 +46,33 @@ This is appropriate for single-cluster dev/test environments.
 ### 4. Stability (P2)
 - Pinned Helm chart to v1.0.0
 - Prevents unexpected updates
+
+### 5. Dual Installation Conflict (P0) - CRITICAL FIX
+**Found:** `rancher-server.sh` was calling `kargo_init.sh` when `KARGO_ENABLED=true`
+**Impact:** Script installed Kargo TWICE - once via script, once via Fleet
+**Result:** Resource conflicts, duplicate installations, unpredictable state
+
+**Fixed:**
+- Modified `rancher-server.sh` to require `KARGO_USE_SCRIPT=true` for script path
+- By default, Kargo is now ONLY managed by Fleet
+- Old script path deprecated but available for manual/emergency use
+- Added clear documentation in vagrant-config.yml
+
+**Why This Matters:**
+Installing Kargo twice causes:
+- Conflicting resource ownership (script vs Fleet)
+- Unpredictable reconciliation loops
+- Secret duplication (git-repo-creds vs git-credentials)
+- Confusion about source of truth
+
+**Verification:**
+```bash
+# Should NOT see kargo_init.sh output in provisioning logs
+vagrant provision | grep "KARGO INSTALLED"  # Should be empty
+
+# Kargo should only come from Fleet
+kubectl get helmchart kargo -n kube-system -o yaml | grep "fleet"
+```
 
 ## Deployment Flow
 
