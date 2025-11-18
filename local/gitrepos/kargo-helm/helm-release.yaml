@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   chart: oci://ghcr.io/akuity/kargo-charts/kargo
-  version: 1.0.0
+  version: 1.1.0
   targetNamespace: kargo
   createNamespace: true
   valuesContent: |-
