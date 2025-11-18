@@ -1,4 +1,8 @@
-# No defaultNamespace - resources specify their own namespaces
+# Deploy Kargo resources after CRDs are installed
+
+# Wait for Helm chart to install CRDs first
+dependsOn:
+- name: local-manifests-local-gitrepos-kargo-helm
 
 targetCustomizations:
 - name: local-only
@@ -6,7 +10,7 @@ targetCustomizations:
     matchLabels:
       cluster-type: local
 
-# Ignore auto-generated and secret fields in diffs
+# Ignore auto-generated fields
 diff:
   comparePatches:
   - apiVersion: v1

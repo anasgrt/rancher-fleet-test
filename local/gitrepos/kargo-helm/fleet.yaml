@@ -1,0 +1,7 @@
+# Install Kargo Helm Chart first (installs CRDs)
+
+targetCustomizations:
+- name: local-only
+  clusterSelector:
+    matchLabels:
+      cluster-type: local
