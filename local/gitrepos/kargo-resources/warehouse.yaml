@@ -14,3 +14,6 @@ spec:
   - git:
       repoURL: git@github.com:anasgrt/rancher-argocd-test.git
       branch: main
+      strictSemvers: false  # Accept all commits, not just semver tags
+      discoveryLimit: 20
+      commitSelectionStrategy: NewestFromBranch

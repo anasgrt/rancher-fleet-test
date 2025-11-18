@@ -16,6 +16,7 @@ spec:
     spec:
       steps:
       - uses: git-clone
+        as: clone
         config:
           repoURL: git@github.com:anasgrt/rancher-argocd-test.git
           checkout:
@@ -34,7 +35,10 @@ spec:
       - uses: git-commit
         config:
           path: ./out
-          messageFromSteps: [0]
+          message: |
+            Promoted to acc stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
       - uses: git-push
         config:
           path: ./out
@@ -59,6 +63,7 @@ spec:
     spec:
       steps:
       - uses: git-clone
+        as: clone
         config:
           repoURL: git@github.com:anasgrt/rancher-argocd-test.git
           checkout:
@@ -77,7 +82,10 @@ spec:
       - uses: git-commit
         config:
           path: ./out
-          messageFromSteps: [0]
+          message: |
+            Promoted to prd stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
       - uses: git-push
         config:
           path: ./out
