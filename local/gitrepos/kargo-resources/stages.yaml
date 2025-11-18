@@ -5,16 +5,35 @@ metadata:
   name: acc
   namespace: hello-kargo
 spec:
-  # Subscribe to the warehouse for new commits
   subscriptions:
     warehouse: hello-kargo
-  
-  # Use the gitops-promotion task for promotions
+
   promotionTemplate:
     spec:
-      tasks:
-      - name: promote
-        uses: gitops-promotion
+      steps:
+      - uses: git-clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/acc
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src
+          outPath: ./out
+      - uses: git-commit
+        config:
+          path: ./out
+          messageFromSteps: [0]
+      - uses: git-push
+        config:
+          path: ./out
 
 ---
 # Production (prd) stage - subscribes to acc stage
@@ -24,14 +43,33 @@ metadata:
   name: prd
   namespace: hello-kargo
 spec:
-  # Subscribe to acc stage for verified changes
   subscriptions:
     upstreamStages:
     - name: acc
-  
-  # Use the gitops-promotion task for promotions
+
   promotionTemplate:
     spec:
-      tasks:
-      - name: promote
-        uses: gitops-promotion
+      steps:
+      - uses: git-clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/prd
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src
+          outPath: ./out
+      - uses: git-commit
+        config:
+          path: ./out
+          messageFromSteps: [0]
+      - uses: git-push
+        config:
+          path: ./out
