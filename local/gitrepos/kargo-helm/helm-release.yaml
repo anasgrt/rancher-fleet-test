@@ -6,7 +6,7 @@ metadata:
 spec:
   repo: https://charts.akuity.io
   chart: kargo
-  version: 1.1.0
+  version: 1.8.3
   targetNamespace: kargo
   createNamespace: true
   valuesContent: |-
