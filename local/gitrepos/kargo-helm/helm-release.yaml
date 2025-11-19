@@ -4,7 +4,8 @@ metadata:
   name: kargo
   namespace: kube-system
 spec:
-  chart: oci://ghcr.io/akuity/kargo-charts/kargo
+  repo: https://charts.akuity.io
+  chart: kargo
   version: 1.1.0
   targetNamespace: kargo
   createNamespace: true
