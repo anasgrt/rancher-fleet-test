@@ -10,7 +10,7 @@ metadata:
     fleet.cattle.io/apply-weight: "1"
 spec:
   # Refresh interval - Kargo will retry if credentials fail
-  interval: 5m
+  interval: 1m
   # Monitor the main branch of the Git repository
   subscriptions:
   - git:

@@ -1,7 +1,8 @@
-# Deploy Kargo resources after CRDs are installed
+# Deploy Kargo resources after CRDs and namespace are created
 
 dependsOn:
-- name: local-manifests-local-gitrepos-kargo-helm
+- name: local-manifests-local-kargo-helm
+- name: local-manifests-local-kargo-namespace
 
 targetCustomizations:
 - name: local-only
