@@ -3,6 +3,3 @@ apiVersion: kargo.akuity.io/v1alpha1
 kind: Project
 metadata:
   name: hello-kargo
-  annotations:
-    # Fleet: Apply this first to create namespace
-    fleet.cattle.io/apply-weight: "-1"

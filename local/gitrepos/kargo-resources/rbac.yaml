@@ -3,6 +3,9 @@ kind: RoleBinding
 metadata:
   name: kargo-controller-secrets
   namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
