@@ -1,5 +1,0 @@
-# Project - Kargo will create the namespace with proper labels
-apiVersion: kargo.akuity.io/v1alpha1
-kind: Project
-metadata:
-  name: hello-kargo
