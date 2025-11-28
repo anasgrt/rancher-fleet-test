@@ -10,7 +10,7 @@
 # See: README.md for complete documentation
 
 # Monitoring stack for management cluster
-defaultNamespace: cattle-monitoring-system
+defaultNamespace: prometheus-monitoring
 
 # Clean up resources when bundle removed
 keepResources: false
