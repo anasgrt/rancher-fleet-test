@@ -13,10 +13,10 @@ spec:
   source:
     repoURL: git@github.com:anasgrt/rancher-argocd-test.git
     targetRevision: stage/key02-acc
-    path: .
+    path: customers/key02/acc
   destination:
     server: https://kubernetes.default.svc
-    namespace: hello-kargo
+    namespace: key02-acc
   syncPolicy:
     automated:
       prune: true
