@@ -5,10 +5,5 @@
 # pointing to this folder. Everything else is managed via GitOps from here.
 # =============================================================================
 
-defaultNamespace: fleet-local
-
-helm:
-  releaseName: fleet-bootstrap
-
-# No cluster targeting needed - this deploys to the local/management cluster
-# where Fleet controller runs
+# No special configuration needed - Fleet will apply all YAML files in this
+# directory and subdirectories as raw Kubernetes manifests.
