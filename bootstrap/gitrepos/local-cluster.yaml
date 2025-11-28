@@ -1,0 +1,20 @@
+# =============================================================================
+# Local Cluster GitRepo
+# =============================================================================
+# Deploys ArgoCD, Kargo, and other management tools to the local cluster
+# =============================================================================
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: local-manifests
+  namespace: fleet-local
+spec:
+  repo: https://github.com/anasgrt/rancher-fleet-test.git
+  branch: main
+  paths:
+    - local/gitrepos
+  pollingInterval: 15s
+  targets:
+    - clusterSelector:
+        matchLabels:
+          cluster: local

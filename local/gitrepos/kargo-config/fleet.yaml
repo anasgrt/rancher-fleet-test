@@ -1,0 +1,4 @@
+# Kargo Configuration - Ingress and additional settings
+defaultNamespace: kargo
+dependsOn:
+  - name: kargo-helm

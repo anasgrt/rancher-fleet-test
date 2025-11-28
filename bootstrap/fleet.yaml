@@ -1,0 +1,14 @@
+# =============================================================================
+# Bootstrap Fleet Configuration
+# =============================================================================
+# This is the entry point for Fleet GitOps. Ansible creates a single GitRepo
+# pointing to this folder. Everything else is managed via GitOps from here.
+# =============================================================================
+
+defaultNamespace: fleet-local
+
+helm:
+  releaseName: fleet-bootstrap
+
+# No cluster targeting needed - this deploys to the local/management cluster
+# where Fleet controller runs

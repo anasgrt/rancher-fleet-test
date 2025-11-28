@@ -1,0 +1,9 @@
+# =============================================================================
+# GitRepos Configuration
+# =============================================================================
+# This folder contains GitRepo manifests that Fleet will apply.
+# Each GitRepo points to different paths in this repository.
+# =============================================================================
+
+# Deploy raw manifests (GitRepo CRs)
+defaultNamespace: fleet-local

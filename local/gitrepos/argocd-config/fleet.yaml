@@ -1,0 +1,4 @@
+# ArgoCD Configuration - Ingress and additional settings
+defaultNamespace: argocd
+dependsOn:
+  - name: argocd

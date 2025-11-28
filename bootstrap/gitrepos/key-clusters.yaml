@@ -1,0 +1,22 @@
+# =============================================================================
+# Key (Downstream) Clusters GitRepo
+# =============================================================================
+# Deploys workloads to downstream clusters labeled with env=key
+# =============================================================================
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: key-manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/anasgrt/rancher-fleet-test.git
+  branch: main
+  paths:
+    - key/gitrepos/common
+    - key/gitrepos/dev
+    - key/gitrepos/prd
+  pollingInterval: 15s
+  targets:
+    - clusterSelector:
+        matchLabels:
+          env: key
