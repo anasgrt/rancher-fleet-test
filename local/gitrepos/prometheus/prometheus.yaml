@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
-  namespace: cattle-monitoring-system
+  namespace: prometheus-monitoring
 data:
   prometheus.yml: |
     global:
