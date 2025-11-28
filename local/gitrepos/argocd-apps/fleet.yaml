@@ -2,4 +2,4 @@
 defaultNamespace: argocd
 dependsOn:
   - name: local-manifests-local-gitrepos-argocd
-  - name: local-manifests-local-gitrepos-kargo-resources
+  - name: local-manifests-local-gitrepos-kargo-namespace
