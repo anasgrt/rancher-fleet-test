@@ -1,4 +1,4 @@
 # ArgoCD Configuration - Ingress and additional settings
 defaultNamespace: argocd
 dependsOn:
-  - name: argocd
+  - name: local-manifests-local-gitrepos-argocd

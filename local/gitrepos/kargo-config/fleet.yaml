@@ -1,4 +1,4 @@
 # Kargo Configuration - Ingress and additional settings
 defaultNamespace: kargo
 dependsOn:
-  - name: kargo-helm
+  - name: local-manifests-local-gitrepos-kargo-helm
