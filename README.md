@@ -4,8 +4,42 @@
 
 This repository contains Fleet-managed Kubernetes applications for the Rancher multi-cluster environment.
 
-**Fleet Version**: v0.13.4 (bundled with Rancher v2.12.3)  
+**Fleet Version**: v0.13.4 (bundled with Rancher v2.12.3)
 **Infrastructure**: rancher_vagrant_environment
+
+## 📊 Deployed Applications
+
+### Management Cluster (local-ctrl)
+
+The following applications are automatically deployed to the management cluster via Fleet:
+
+| Application | Purpose | Namespace | Access URL |
+|-------------|---------|-----------|------------|
+| **ArgoCD** | Continuous Delivery | `argocd` | <http://argocd.192.168.56.10.nip.io> |
+| **Kargo** | Promotion Workflow | `kargo` | <https://kargo.192.168.56.10.nip.io> |
+| **Prometheus** | Metrics & Monitoring | `prometheus-monitoring` | <http://prometheus.192.168.56.10.nip.io> |
+| **Grafana** | Metrics Visualization | `prometheus-monitoring` | <http://grafana.192.168.56.10.nip.io> |
+
+### Access Credentials
+
+**ArgoCD:**
+
+- Username: `admin`
+- Password: Stored in `.shared/argocd_password` (created by Ansible)
+
+**Kargo:**
+
+- Username: `admin`
+- Password: `admin123` (default)
+
+**Grafana:**
+
+- Username: `admin`
+- Password: `admin`
+
+**Prometheus:**
+
+- No authentication required (monitoring interface)
 
 ## Repository Structure
 
