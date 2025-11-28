@@ -1,0 +1,3 @@
+# This file has been moved to ../kargo-namespace/project.yaml
+# The Project resource must be in a separate GitRepo to ensure
+# the namespace exists before other Kargo resources are applied.

@@ -1,0 +1,10 @@
+# Create Kargo namespace FIRST before any other Kargo resources
+
+dependsOn:
+- name: local-manifests-local-gitrepos-kargo-helm
+
+targetCustomizations:
+- name: local-only
+  clusterSelector:
+    matchLabels:
+      cluster-type: local

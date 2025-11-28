@@ -1,0 +1,26 @@
+# Fleet Configuration for nginx-ingress
+#
+# IMPORTANT RULES:
+# 1. DO NOT add namespace.yaml or any other raw manifests to this directory
+#    (Helm charts cannot be mixed with raw manifests in Fleet)
+# 2. Use 'defaultNamespace' instead of creating namespace.yaml
+#
+# Targeting: Controlled by GitRepo 'common' which targets ClusterGroup 'default'
+# This bundle deploys to ALL downstream clusters (dev and prd)
+#
+# See: README.md for complete documentation
+
+defaultNamespace: ingress-nginx
+
+# Clean up resources when bundle removed
+keepResources: false
+
+helm:
+  chart: ingress-nginx
+  repo: https://kubernetes.github.io/ingress-nginx
+  version: 4.11.3
+  releaseName: nginx-ingress
+  wait: false
+  timeoutSeconds: 600
+  valuesFiles:
+  - values.yaml

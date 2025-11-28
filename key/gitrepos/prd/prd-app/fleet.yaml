@@ -1,0 +1,6 @@
+# Fleet Configuration for prd-app
+# Targeting: Controlled by GitRepo 'prd' which targets clusterSelector: env=prd
+# This bundle deploys ONLY to prd clusters via GitRepo-level targeting
+
+defaultNamespace: prd-app
+keepResources: false

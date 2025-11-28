@@ -1,0 +1,18 @@
+# Install ArgoCD via Helm Chart
+# This should be applied first before Kargo (which depends on ArgoCD)
+
+defaultNamespace: argocd
+
+helm:
+  releaseName: argocd
+  repo: https://argoproj.github.io/argo-helm
+  chart: argo-cd
+  version: "7.7.5"
+  values:
+    server:
+      service:
+        type: ClusterIP
+    configs:
+      params:
+        # Allow insecure connection (for port-forwarding)
+        server.insecure: true

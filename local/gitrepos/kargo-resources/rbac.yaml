@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kargo-controller-secrets
+  namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  # This ClusterRole is provided by Kargo installation
+  name: kargo-project-secrets-reader
+subjects:
+- kind: ServiceAccount
+  name: kargo-controller
+  namespace: kargo

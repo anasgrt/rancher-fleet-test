@@ -1,0 +1,25 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kargo
+  namespace: kube-system
+spec:
+  # Official Kargo Helm chart OCI registry
+  # Note: RKE2's klipper-helm controller supports OCI charts
+  chart: oci://ghcr.io/akuity/kargo-charts/kargo
+  version: 1.8.3
+  targetNamespace: kargo
+  createNamespace: true
+  valuesContent: |-
+    api:
+      adminAccount:
+        enabled: true
+        passwordHash: "$2y$10$06YD/43LRbgc0FC0g2RgUOWDwWFaD6855fAHQAgDeQICo8QxnsP9W"
+        tokenSigningKey: "iCd5oQ69frECgfcw3xeIpAQbwu3CVSHd"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"

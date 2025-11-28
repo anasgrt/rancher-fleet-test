@@ -1,0 +1,212 @@
+# Acceptance (acc) stage - subscribes directly to the warehouse
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: key01-acc
+  namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      direct: true
+
+  promotionTemplate:
+    spec:
+      steps:
+      - uses: git-clone
+        as: clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/key01-acc
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src/base
+          outPath: ./out/base
+      - uses: copy
+        config:
+          inPath: ./src/customers/key01/acc
+          outPath: ./out/customers/key01/acc
+      - uses: git-commit
+        config:
+          path: ./out
+          message: |
+            Promoted to key01-acc stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
+      - uses: git-push
+        config:
+          path: ./out
+
+---
+# Production (prd) stage - subscribes to acc stage
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: key01-prd
+  namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      stages:
+      - key01-acc
+
+  promotionTemplate:
+    spec:
+      steps:
+      - uses: git-clone
+        as: clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/key01-prd
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src/base
+          outPath: ./out/base
+      - uses: copy
+        config:
+          inPath: ./src/customers/key01/prd
+          outPath: ./out/customers/key01/prd
+      - uses: git-commit
+        config:
+          path: ./out
+          message: |
+            Promoted to key01-prd stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
+      - uses: git-push
+        config:
+          path: ./out
+
+---
+# Acceptance (key02-acc) stage - subscribes directly to the warehouse
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: key02-acc
+  namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      direct: true
+
+  promotionTemplate:
+    spec:
+      steps:
+      - uses: git-clone
+        as: clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/key02-acc
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src/base
+          outPath: ./out/base
+      - uses: copy
+        config:
+          inPath: ./src/customers/key02/acc
+          outPath: ./out/customers/key02/acc
+      - uses: git-commit
+        config:
+          path: ./out
+          message: |
+            Promoted to key02-acc stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
+      - uses: git-push
+        config:
+          path: ./out
+
+---
+# Production (key02-prd) stage - subscribes to key02-acc stage
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: key02-prd
+  namespace: hello-kargo
+  annotations:
+    # Fleet: Apply after Project creates namespace
+    fleet.cattle.io/apply-weight: "1"
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: hello-kargo
+    sources:
+      stages:
+      - key02-acc
+
+  promotionTemplate:
+    spec:
+      steps:
+      - uses: git-clone
+        as: clone
+        config:
+          repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/key02-prd
+            create: true
+            path: ./out
+      - uses: git-clear
+        config:
+          path: ./out
+      - uses: copy
+        config:
+          inPath: ./src/base
+          outPath: ./out/base
+      - uses: copy
+        config:
+          inPath: ./src/customers/key02/prd
+          outPath: ./out/customers/key02/prd
+      - uses: git-commit
+        config:
+          path: ./out
+          message: |
+            Promoted to key02-prd stage
+
+            Source commit: ${{ commitFrom("git@github.com:anasgrt/rancher-argocd-test.git").ID }}
+      - uses: git-push
+        config:
+          path: ./out

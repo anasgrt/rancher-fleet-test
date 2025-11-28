@@ -1,0 +1,6 @@
+# Fleet Configuration for debug-tools
+# Targeting: Controlled by GitRepo 'dev' which targets clusterSelector: env=dev
+# This bundle deploys ONLY to dev clusters via GitRepo-level targeting
+
+defaultNamespace: debug-tools
+keepResources: false

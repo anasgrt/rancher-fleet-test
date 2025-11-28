@@ -1,0 +1,43 @@
+# nginx-ingress Helm Values for DOWNSTREAM Clusters
+# Optimized for Vagrant/bare-metal environments
+
+controller:
+  # High availability with 2 replicas
+  replicaCount: 2
+
+  # Resource limits for development environment
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  # CRITICAL: NodePort service type for Vagrant
+  # LoadBalancer would wait indefinitely for external IP in bare-metal
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080   # Access via http://<node-ip>:30080
+      https: 30443  # Access via https://<node-ip>:30443
+
+  # Metrics for monitoring (Prometheus compatible)
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false  # Enable if using Prometheus Operator
+
+  # Admission webhooks for validation
+  admissionWebhooks:
+    enabled: true
+
+  # Security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    fsGroup: 101
+
+# DefaultBackend disabled to reduce resource usage
+defaultBackend:
+  enabled: false

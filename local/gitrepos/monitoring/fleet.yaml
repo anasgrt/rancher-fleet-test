@@ -1,0 +1,23 @@
+# Fleet v0.13.4 Configuration for monitoring
+#
+# IMPORTANT RULES:
+# 1. DO NOT add 'targets' or 'targetCustomizations' fields
+#    (Targeting is controlled by ClusterGroup resources for local cluster)
+# 2. For Helm charts: DO NOT mix with raw Kubernetes manifests
+# 3. Use 'defaultNamespace' to ensure proper namespace creation
+#
+# Targeting: Controlled by ClusterGroup for local/management cluster
+# See: README.md for complete documentation
+
+# Monitoring stack for management cluster
+defaultNamespace: cattle-monitoring-system
+
+# Clean up resources when bundle removed
+keepResources: false
+
+# Target management cluster only
+targetCustomizations:
+- name: management-only
+  clusterSelector:
+    matchLabels:
+      env: management

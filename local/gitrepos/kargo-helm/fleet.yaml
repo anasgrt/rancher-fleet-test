@@ -1,0 +1,5 @@
+# Install Kargo Helm Chart (installs CRDs)
+# Depends on ArgoCD being installed first
+
+dependsOn:
+- name: local-manifests-local-gitrepos-argocd

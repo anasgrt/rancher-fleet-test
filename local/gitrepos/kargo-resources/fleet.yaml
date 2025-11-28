@@ -1,0 +1,24 @@
+# Deploy Kargo resources after CRDs and namespace are created
+
+dependsOn:
+- name: local-manifests-local-gitrepos-kargo-helm
+- name: local-manifests-local-gitrepos-kargo-namespace
+
+targetCustomizations:
+- name: local-only
+  clusterSelector:
+    matchLabels:
+      cluster-type: local
+
+# Ignore auto-generated fields
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: Secret
+    operations:
+    - {"op": "remove", "path": "/data"}
+  - apiVersion: v1
+    kind: ServiceAccount
+    operations:
+    - {"op": "remove", "path": "/secrets"}
+    - {"op": "remove", "path": "/imagePullSecrets"}
