@@ -1,0 +1,89 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: prometheus
+  namespace: kube-system
+spec:
+  # Prometheus Community Helm chart
+  repo: https://prometheus-community.github.io/helm-charts
+  chart: kube-prometheus-stack
+  version: 65.8.1
+  targetNamespace: prometheus-monitoring
+  createNamespace: true
+  valuesContent: |-
+    # Prometheus configuration
+    prometheus:
+      prometheusSpec:
+        retention: 30d
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi
+
+    # Grafana configuration
+    grafana:
+      enabled: true
+      adminPassword: "admin"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      persistence:
+        enabled: true
+        size: 10Gi
+
+    # AlertManager configuration
+    alertmanager:
+      enabled: true
+      alertmanagerSpec:
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
+
+    # Node Exporter - exports node metrics
+    nodeExporter:
+      enabled: true
+
+    # Kube State Metrics - exports k8s object metrics
+    kubeStateMetrics:
+      enabled: true
+
+    # Service monitors for automatic scraping
+    kubeApiServer:
+      enabled: true
+    kubelet:
+      enabled: true
+    kubeControllerManager:
+      enabled: true
+    coreDns:
+      enabled: true
+    kubeEtcd:
+      enabled: true
+    kubeScheduler:
+      enabled: true
+    kubeProxy:
+      enabled: true

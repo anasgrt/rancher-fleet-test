@@ -1,4 +1,4 @@
-# Fleet v0.13.4 Configuration for monitoring
+# Fleet v0.13.4 Configuration for Prometheus Monitoring Stack
 #
 # IMPORTANT RULES:
 # 1. DO NOT add 'targets' or 'targetCustomizations' fields
@@ -9,11 +9,9 @@
 # Targeting: Controlled by ClusterGroup for local/management cluster
 # See: README.md for complete documentation
 
-# Monitoring stack for management cluster
+# Prometheus monitoring stack for management cluster
+# Deploys: Prometheus, Grafana, AlertManager, Node Exporter, Kube State Metrics
 defaultNamespace: prometheus-monitoring
-
-# Clean up resources when bundle removed
-keepResources: false
 
 # Target management cluster only
 targetCustomizations:
