@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: key01-prd
+  namespace: argocd
+  labels:
+    kargo.akuity.io/project: hello-kargo
+    kargo.akuity.io/stage: key01-prd
+  annotations:
+    kargo.akuity.io/authorized-stage: hello-kargo:key01-prd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:anasgrt/rancher-argocd-test.git
+    targetRevision: stage/key01-prd
+    path: .
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-kargo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
