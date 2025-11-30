@@ -151,6 +151,46 @@ Filter by labels:
 - `node="key-ctrl"` - Metrics from specific node
 - `environment="key"` - Metrics from specific environment
 
+## Important Configuration Notes
+
+### Node Label Attachment
+
+To ensure Grafana dashboards can filter by node name, the Helm configuration includes:
+
+```yaml
+prometheus-node-exporter:
+  prometheus:
+    monitor:
+      attachMetadata:
+        node: true
+```
+
+This attaches the Kubernetes node name as a `node` label to all node-exporter metrics, enabling proper filtering in Grafana dashboards. Without this, dashboards that filter by node name (e.g., `node="key-ctrl"`) will not display data.
+
+**Requires**: Prometheus v2.45+ and prometheus-node-exporter chart v4.15.0+
+
+### External Labels
+
+Each Prometheus instance is configured with external labels for proper identification:
+
+**Management Cluster (local)**:
+```yaml
+externalLabels:
+  cluster: 'local'
+  cluster_type: 'management'
+  environment: 'local'
+```
+
+**Downstream Clusters (key)**:
+```yaml
+externalLabels:
+  cluster: 'key'
+  cluster_type: 'downstream'
+  environment: 'key'
+```
+
+These labels are automatically added to all metrics scraped by that Prometheus instance, enabling multi-cluster filtering in Grafana.
+
 ## Troubleshooting
 
 ### Metrics not showing from downstream cluster
@@ -178,6 +218,46 @@ Filter by labels:
 2. Check NodePort 30090 is exposed on downstream Prometheus
 3. Wait 30 seconds for Prometheus to scrape (scrape_interval: 30s)
 4. Check Prometheus logs: `kubectl logs -n prometheus-monitoring prometheus-prometheus-kube-prometheus-prometheus-0`
+
+### Dashboard shows "No data" or nodes not appearing in filters
+
+**Symptoms**: Grafana dashboards don't show any data when filtering by node name, or node names don't appear in dropdown filters.
+
+**Root Cause**: The `node` label is not attached to node-exporter metrics.
+
+**Solution**:
+
+1. Verify the configuration includes node metadata attachment:
+   ```bash
+   kubectl get servicemonitor -n prometheus-monitoring prometheus-prometheus-node-exporter -o yaml | grep -A 2 "attachMetadata:"
+   ```
+   Should show:
+   ```yaml
+   attachMetadata:
+     node: true
+   ```
+
+2. If it shows `node: false`, update your Helm values to include:
+   ```yaml
+   prometheus-node-exporter:
+     prometheus:
+       monitor:
+         attachMetadata:
+           node: true
+   ```
+
+3. After updating, wait 2-3 minutes for the ServiceMonitor to be updated and Prometheus to rescrape.
+
+4. Verify the `node` label is present in metrics:
+   ```bash
+   kubectl exec -n prometheus-monitoring prometheus-prometheus-kube-prometheus-prometheus-0 -c prometheus -- \
+     wget -qO- 'http://localhost:9090/api/v1/query?query=node_cpu_seconds_total' | grep '"node"'
+   ```
+
+5. Restart Grafana pod to refresh dashboard queries if needed:
+   ```bash
+   kubectl delete pod -n prometheus-monitoring -l app.kubernetes.io/name=grafana
+   ```
 
 ## Benefits of This Architecture
 

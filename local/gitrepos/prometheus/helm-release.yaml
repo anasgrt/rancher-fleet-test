@@ -15,6 +15,10 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 30d
+        externalLabels:
+          cluster: 'local'
+          cluster_type: 'management'
+          environment: 'local'
         resources:
           requests:
             memory: "2Gi"
@@ -112,6 +116,14 @@ spec:
     # Node Exporter - exports node metrics
     nodeExporter:
       enabled: true
+
+    # Prometheus Node Exporter subchart configuration
+    # This ensures node labels are attached to all node-exporter metrics
+    prometheus-node-exporter:
+      prometheus:
+        monitor:
+          attachMetadata:
+            node: true
 
     # Kube State Metrics - exports k8s object metrics
     kubeStateMetrics:
