@@ -37,16 +37,20 @@ spec:
             scrape_interval: 30s
             scrape_timeout: 25s
             honor_labels: true
+            honor_timestamps: false
             metrics_path: '/federate'
             params:
               'match[]':
                 # Federate all time series
                 - '{__name__=~".+"}'
 
-            # Relabel to copy nodename to node label for Grafana compatibility
+            # Relabel to ensure node labels are present for Grafana compatibility
+            # First preserve any existing node label, then copy nodename->node for node-exporter metrics
             metric_relabel_configs:
               - source_labels: [nodename]
                 target_label: node
+                regex: (.+)
+                replacement: $1
                 action: replace
 
             # Static configs for downstream clusters
