@@ -30,6 +30,41 @@ spec:
                 requests:
                   storage: 50Gi
 
+        # Additional scrape configs for federation
+        # Federates metrics from all downstream cluster Prometheus instances
+        additionalScrapeConfigs:
+          - job_name: 'federate-downstream-clusters'
+            scrape_interval: 30s
+            scrape_timeout: 25s
+            honor_labels: true
+            metrics_path: '/federate'
+            params:
+              'match[]':
+                # Federate all time series
+                - '{__name__=~".+"}'
+
+            # Static configs for downstream clusters
+            # To add a new cluster:
+            # 1. Deploy Prometheus to the cluster (via key/gitrepos/common/prometheus)
+            # 2. Add entry below with format: '<control-plane-ip>:30090'
+            # 3. Commit and push - Fleet will auto-deploy the update
+            static_configs:
+              # Key cluster Prometheus (exposed on NodePort 30090)
+              - targets: ['192.168.56.20:30090']
+                labels:
+                  cluster: 'key'
+                  cluster_type: 'downstream'
+                  prometheus_instance: 'key-prometheus'
+                  environment: 'key'
+
+              # Template for adding new clusters:
+              # - targets: ['<control-plane-ip>:30090']
+              #   labels:
+              #     cluster: '<cluster-name>'
+              #     cluster_type: 'downstream'
+              #     prometheus_instance: '<cluster-name>-prometheus'
+              #     environment: '<env-label>'
+
     # Grafana configuration
     grafana:
       enabled: true

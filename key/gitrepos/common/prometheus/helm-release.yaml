@@ -25,6 +25,11 @@ spec:
         # Disable persistence - no storage provisioner on downstream cluster
         storageSpec: {}
 
+      # Expose Prometheus as NodePort for federation from management cluster
+      service:
+        type: NodePort
+        nodePort: 30090
+
     # Grafana configuration
     grafana:
       enabled: true
