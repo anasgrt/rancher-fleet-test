@@ -20,6 +20,16 @@ The following applications are automatically deployed to the management cluster 
 | **Prometheus** | Metrics & Monitoring | `prometheus-monitoring` | <http://prometheus.192.168.56.10.nip.io> |
 | **Grafana** | Metrics Visualization | `prometheus-monitoring` | <http://grafana.192.168.56.10.nip.io> |
 
+### Downstream Clusters (key-ctrl, key-worker)
+
+The following applications are automatically deployed to downstream clusters via Fleet:
+
+| Application | Purpose | Namespace | Access URL |
+|-------------|---------|-----------|------------|
+| **NGINX Ingress** | Ingress Controller | `ingress-nginx` | N/A |
+| **Prometheus** | Metrics & Monitoring | `prometheus-monitoring` | <http://prometheus.192.168.56.20.nip.io> |
+| **Grafana** | Metrics Visualization | `prometheus-monitoring` | <http://grafana.192.168.56.20.nip.io> |
+
 ### Access Credentials
 
 **ArgoCD:**
