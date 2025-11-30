@@ -114,10 +114,14 @@ spec:
       enabled: true
 
     # Service monitors for automatic scraping
+    # Enable node label attachment for better Grafana dashboard compatibility
     kubeApiServer:
       enabled: true
     kubelet:
       enabled: true
+      serviceMonitor:
+        attachMetadata:
+          node: true
     kubeControllerManager:
       enabled: true
     coreDns:

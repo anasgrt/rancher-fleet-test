@@ -25,6 +25,10 @@ spec:
         # Disable persistence - no storage provisioner on downstream cluster
         storageSpec: {}
 
+        # Attach node metadata to pod metrics for better federation support
+        podMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+
       # Expose Prometheus as NodePort for federation from management cluster
       service:
         type: NodePort
@@ -67,11 +71,27 @@ spec:
     kubeStateMetrics:
       enabled: true
 
+    # Prometheus Operator configuration
+    # Attach node metadata to all scraped metrics
+    prometheusOperator:
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+
     # Service monitors for automatic scraping
+    # Enable node label attachment for better Grafana dashboard compatibility
     kubeApiServer:
       enabled: true
     kubelet:
       enabled: true
+      serviceMonitor:
+        attachMetadata:
+          node: true
     kubeControllerManager:
       enabled: true
     coreDns:
