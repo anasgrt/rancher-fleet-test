@@ -43,6 +43,12 @@ spec:
                 # Federate all time series
                 - '{__name__=~".+"}'
 
+            # Relabel to copy nodename to node label for Grafana compatibility
+            metric_relabel_configs:
+              - source_labels: [nodename]
+                target_label: node
+                action: replace
+
             # Static configs for downstream clusters
             # To add a new cluster:
             # 1. Deploy Prometheus to the cluster (via key/gitrepos/common/prometheus)
