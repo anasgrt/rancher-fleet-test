@@ -19,6 +19,20 @@ spec:
           cluster: 'local'
           cluster_type: 'management'
           environment: 'local'
+
+        # Apply cluster labels to all locally scraped metrics
+        # This ensures local metrics have the same labels as federated metrics
+        commonMetricRelabelings:
+          - sourceLabels: []
+            targetLabel: cluster
+            replacement: 'local'
+          - sourceLabels: []
+            targetLabel: cluster_type
+            replacement: 'management'
+          - sourceLabels: []
+            targetLabel: environment
+            replacement: 'local'
+
         resources:
           requests:
             memory: "2Gi"
