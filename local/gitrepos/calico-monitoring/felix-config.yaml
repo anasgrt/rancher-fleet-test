@@ -1,0 +1,9 @@
+---
+apiVersion: crd.projectcalico.org/v1
+kind: FelixConfiguration
+metadata:
+  name: default
+spec:
+  # Enable Prometheus metrics on port 9091
+  prometheusMetricsEnabled: true
+  prometheusMetricsPort: 9091

@@ -1,0 +1,131 @@
+---
+# ServiceMonitor for Calico Felix (runs on each node via calico-node DaemonSet)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: calico-felix
+  namespace: calico-system
+  labels:
+    release: prometheus
+    k8s-app: calico-node
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-node
+  namespaceSelector:
+    matchNames:
+      - calico-system
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - sourceLabels: []
+          targetLabel: cluster
+          replacement: local
+        - sourceLabels: []
+          targetLabel: cluster_type
+          replacement: management
+        - sourceLabels: []
+          targetLabel: environment
+          replacement: local
+
+---
+# ServiceMonitor for Calico Typha
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: calico-typha
+  namespace: calico-system
+  labels:
+    release: prometheus
+    k8s-app: calico-typha
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-typha
+  namespaceSelector:
+    matchNames:
+      - calico-system
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - sourceLabels: []
+          targetLabel: cluster
+          replacement: local
+        - sourceLabels: []
+          targetLabel: cluster_type
+          replacement: management
+        - sourceLabels: []
+          targetLabel: environment
+          replacement: local
+
+---
+# ServiceMonitor for Calico Kube Controllers
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: calico-kube-controllers
+  namespace: calico-system
+  labels:
+    release: prometheus
+    k8s-app: calico-kube-controllers
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-kube-controllers
+  namespaceSelector:
+    matchNames:
+      - calico-system
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - sourceLabels: []
+          targetLabel: cluster
+          replacement: local
+        - sourceLabels: []
+          targetLabel: cluster_type
+          replacement: management
+        - sourceLabels: []
+          targetLabel: environment
+          replacement: local
+
+---
+# Service for Calico Felix metrics (if not exists)
+apiVersion: v1
+kind: Service
+metadata:
+  name: calico-felix-metrics
+  namespace: calico-system
+  labels:
+    k8s-app: calico-node
+spec:
+  selector:
+    k8s-app: calico-node
+  ports:
+    - name: metrics
+      port: 9091
+      targetPort: 9091
+      protocol: TCP
+
+---
+# Service for Calico Typha metrics (if not exists)
+apiVersion: v1
+kind: Service
+metadata:
+  name: calico-typha-metrics
+  namespace: calico-system
+  labels:
+    k8s-app: calico-typha
+spec:
+  selector:
+    k8s-app: calico-typha
+  ports:
+    - name: metrics
+      port: 9091
+      targetPort: 9091
+      protocol: TCP

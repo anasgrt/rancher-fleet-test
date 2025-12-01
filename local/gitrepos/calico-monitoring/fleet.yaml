@@ -1,0 +1,21 @@
+# Fleet v0.13.4 Configuration for Calico Monitoring
+#
+# IMPORTANT RULES:
+# 1. DO NOT add 'targets' or 'targetCustomizations' fields
+#    (Targeting is controlled by ClusterGroup resources for local cluster)
+# 2. For raw Kubernetes manifests: Keep YAML files in same directory
+# 3. Use 'defaultNamespace' to ensure proper namespace creation
+#
+# Targeting: Controlled by ClusterGroup for local/management cluster
+# See: README.md for complete documentation
+
+# Calico monitoring configuration for management cluster
+# Deploys: ServiceMonitors, Services, and Felix metrics configuration
+defaultNamespace: calico-system
+
+# Target management cluster only
+targetCustomizations:
+- name: management-only
+  clusterSelector:
+    matchLabels:
+      env: management
