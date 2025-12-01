@@ -151,11 +151,30 @@ spec:
       serviceMonitor:
         attachMetadata:
           node: true
-        metricRelabelings:
+        # Add cluster labels to all kubelet/cAdvisor metrics
+        cAdvisorMetricRelabelings:
           - targetLabel: cluster
             replacement: local
+            action: replace
           - targetLabel: cluster_type
             replacement: management
+            action: replace
+        # Add cluster labels to kubelet resource metrics
+        resourceMetricRelabelings:
+          - targetLabel: cluster
+            replacement: local
+            action: replace
+          - targetLabel: cluster_type
+            replacement: management
+            action: replace
+        # Add cluster labels to kubelet probe metrics
+        probesMetricRelabelings:
+          - targetLabel: cluster
+            replacement: local
+            action: replace
+          - targetLabel: cluster_type
+            replacement: management
+            action: replace
     kubeControllerManager:
       enabled: true
       serviceMonitor:
