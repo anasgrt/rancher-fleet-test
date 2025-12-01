@@ -13,9 +13,15 @@ This Fleet bundle configures Prometheus monitoring for Calico CNI components on 
 - **calico-felix-metrics**: Exposes Felix metrics on port 9091
 - **calico-typha-metrics**: Exposes Typha metrics on port 9091
 
-### 3. Felix Configuration
-- Enables Prometheus metrics collection on Calico Felix
-- Configures metrics endpoint on port 9091
+## Prerequisites
+
+Before deploying this bundle, **Felix Prometheus metrics must be enabled manually**:
+
+```bash
+kubectl patch felixconfiguration default --type=merge --patch '{"spec":{"prometheusMetricsEnabled":true,"prometheusMetricsPort":9091}}'
+```
+
+This is required because the FelixConfiguration is managed by the RKE2 Calico Helm chart and cannot be managed by Fleet.
 
 ## Labels Applied
 
@@ -51,10 +57,9 @@ To view Calico metrics in Grafana:
 
 - `fleet.yaml` - Fleet configuration and targeting
 - `servicemonitors.yaml` - ServiceMonitor and Service definitions
-- `felix-config.yaml` - Felix Prometheus metrics configuration
 
 ## Notes
 
-- The Felix configuration is a patch that enables metrics
+- **Important**: Felix Prometheus metrics must be enabled manually (see Prerequisites)
 - ServiceMonitors require the `release: prometheus` label to be discovered
-- Metrics won't appear until Felix restarts with the new configuration
+- Metrics become available immediately after Felix configuration is updated
