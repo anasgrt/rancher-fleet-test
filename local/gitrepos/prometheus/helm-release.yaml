@@ -20,19 +20,6 @@ spec:
           cluster_type: 'management'
           environment: 'local'
 
-        # Apply cluster labels to all locally scraped metrics
-        # This ensures local metrics have the same labels as federated metrics
-        commonMetricRelabelings:
-          - sourceLabels: []
-            targetLabel: cluster
-            replacement: 'local'
-          - sourceLabels: []
-            targetLabel: cluster_type
-            replacement: 'management'
-          - sourceLabels: []
-            targetLabel: environment
-            replacement: 'local'
-
         resources:
           requests:
             memory: "2Gi"
@@ -138,6 +125,11 @@ spec:
         monitor:
           attachMetadata:
             node: true
+          metricRelabelings:
+            - targetLabel: cluster
+              replacement: local
+            - targetLabel: cluster_type
+              replacement: management
 
     # Kube State Metrics - exports k8s object metrics
     kubeStateMetrics:
@@ -145,20 +137,52 @@ spec:
 
     # Service monitors for automatic scraping
     # Enable node label attachment for better Grafana dashboard compatibility
+    # Add cluster labels to all ServiceMonitors for proper multi-cluster support
     kubeApiServer:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
+          - targetLabel: cluster_type
+            replacement: management
     kubelet:
       enabled: true
       serviceMonitor:
         attachMetadata:
           node: true
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
+          - targetLabel: cluster_type
+            replacement: management
     kubeControllerManager:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
     coreDns:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
     kubeEtcd:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
     kubeScheduler:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
     kubeProxy:
       enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - targetLabel: cluster
+            replacement: local
