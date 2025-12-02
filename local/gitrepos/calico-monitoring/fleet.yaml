@@ -10,12 +10,5 @@
 # See: README.md for complete documentation
 
 # Calico monitoring configuration for management cluster
-# Deploys: ServiceMonitors, Services, and Felix metrics configuration
+# Deploys: ServiceMonitors and Services
 defaultNamespace: calico-system
-
-# Target management cluster only
-targetCustomizations:
-- name: management-only
-  clusterSelector:
-    matchLabels:
-      env: management
