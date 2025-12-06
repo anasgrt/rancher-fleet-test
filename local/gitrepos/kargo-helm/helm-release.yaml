@@ -7,7 +7,7 @@ spec:
   # Official Kargo Helm chart OCI registry
   # Note: RKE2's klipper-helm controller supports OCI charts
   chart: oci://ghcr.io/akuity/kargo-charts/kargo
-  version: 1.8.3
+  version: 1.8.2
   targetNamespace: kargo
   createNamespace: true
   valuesContent: |-

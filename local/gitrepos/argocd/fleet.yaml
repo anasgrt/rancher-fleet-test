@@ -7,7 +7,7 @@ helm:
   releaseName: argocd
   repo: https://argoproj.github.io/argo-helm
   chart: argo-cd
-  version: "7.7.5"
+  version: "7.7.0"
   values:
     server:
       service:

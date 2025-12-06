@@ -7,7 +7,7 @@ spec:
   # Prometheus Community Helm chart
   repo: https://prometheus-community.github.io/helm-charts
   chart: kube-prometheus-stack
-  version: 65.8.1
+  version: 65.5.0
   targetNamespace: prometheus-monitoring
   createNamespace: true
   valuesContent: |-
